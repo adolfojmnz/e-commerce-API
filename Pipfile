@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+pillow = "*"
 django = "*"
 django-filter = "*"
 django-environ = "*"
