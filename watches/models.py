@@ -45,6 +45,9 @@ class Watch(models.Model):
     description = models.CharField(max_length=512)
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
+    class Meta:
+        unique_together = ['collection', 'model_name']
+
     def __str__(self) -> str:
         return self.model_name
 
@@ -55,6 +58,9 @@ class Collection(models.Model):
     brand = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
     release_date = models.DateField()
+
+    class Meta:
+        unique_together = ['name', 'brand']
 
     def __str__(self) -> str:
         return self.name
