@@ -39,8 +39,14 @@ class Watch(models.Model):
     color = models.CharField(choices=COLOR_OPTIONS, max_length=1)
     diameter = models.IntegerField(help_text="Watch diameter in mm")
     movement = models.CharField(choices=MOVEMENT_OPTIONS, max_length=1)
-    case_material = models.CharField(choices=CASE_MATERIAL_OPTIONS, max_length=3)
-    bracelet_material = models.CharField(choices=BRACELET_MATERIAL_OPTIONS, max_length=3)
+    case_material = models.CharField(
+        choices=CASE_MATERIAL_OPTIONS,
+        max_length=3,
+    )
+    bracelet_material = models.CharField(
+        choices=BRACELET_MATERIAL_OPTIONS,
+        max_length=3,
+    )
     release_date = models.DateField()
     description = models.CharField(max_length=512)
     price = models.DecimalField(max_digits=10, decimal_places=2)
