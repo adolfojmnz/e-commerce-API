@@ -31,7 +31,6 @@ COLOR_OPTIONS = [
 class Watch(models.Model):
     collection = models.ForeignKey(
         'watches.Collection', on_delete=models.PROTECT, related_name='watches',
-        null=True, blank=True,
     )
     model_name = models.CharField(max_length=128)
     is_waterproof = models.BooleanField(default=False)
