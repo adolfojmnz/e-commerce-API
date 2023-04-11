@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'watches.apps.WatchesConfig',
     'photos.apps.PhotosConfig',
+    'reviews.apps.ReviewsConfig',
 ]
 
 MIDDLEWARE = [
