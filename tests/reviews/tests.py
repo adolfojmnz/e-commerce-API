@@ -1,10 +1,9 @@
 from django.test import TestCase
 
-from datetime import datetime
-
 from accounts.models import User
 from reviews.models import Review
-from watches.tests import SetUpMixin as SetUpWatchMixin
+
+from tests.watches.tests import SetUpMixin as SetUpWatchMixin
 
 
 class SetUpMixin(SetUpWatchMixin):

@@ -2,8 +2,9 @@ from django.test import TestCase
 
 from datetime import datetime
 
-from accounts.tests import CreateUserMixin
 from watches.models import Watch, Collection
+
+from tests.accounts.tests import CreateUserMixin
 
 
 class SetUpMixin(CreateUserMixin):
