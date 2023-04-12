@@ -12,7 +12,7 @@ class User(AbstractUser):
 
     # custom fields
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    birthdate = models.DateField(auto_now=True)
+    birthdate = models.DateField()
     about = models.CharField(default='', max_length=512)
 
     def __str__(self):
