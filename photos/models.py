@@ -1,10 +1,10 @@
 from django.db import models
 
 
-class Photo(models.Model):
-    watch = models.ForeignKey(
-        'watches.Watch', on_delete=models.PROTECT, related_name='photos',
-    )
+class WatchPhoto(models.Model):
+    watch = models.ForeignKey('watches.Watch',
+                              on_delete=models.PROTECT,
+                              related_name='photos')
     main = models.BooleanField(default=False)
     file = models.ImageField(upload_to='watches/')
 
