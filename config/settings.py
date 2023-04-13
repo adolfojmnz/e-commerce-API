@@ -30,9 +30,6 @@ INSTALLED_APPS = [
     'watches.apps.WatchesConfig',
     'photos.apps.PhotosConfig',
     'reviews.apps.ReviewsConfig',
-
-    # REST API app
-    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
