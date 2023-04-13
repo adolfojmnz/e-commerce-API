@@ -1,19 +1,28 @@
 # E-Commerce Platform
 
-This is a work-in-progress e-commerce platform for selling watches and classical accessories for men. The goal is to provide a modern platform with capabilities for listing, shopping cart, check process, order management, shipping, and customer support and communication. The platform is intended to have a three-tier architecture deployed on AWS EC2.
+This is a work-in-progress e-commerce platform for selling watches and classical accessories for men. The goal is to provide a modern platform with capabilities for profuct listing, shopping cart, check process, order management, shipping, customer support, and communication bewtween vendors and customers. The platform is intended to be structure in a multi-tier architecture deployed on AWS.
 
-## Database Technologies (Tier #1)
+
+## Cache
+
+- RabbitMQ or Redis (yet to be decided)
+
+## Load Balancer
+
+- AWS Elastic Load Balancer
+
+## Database Technologies
 
 - PostgreSQL
-- Psycopg3
 
-## Backend Technologies (Tier #2)
+## Backend Technologies
 
 - Python
 - Django
 - Django Rest Framework
+- Django Channels (Web Sockets)
 
-## Frontend Technologies (Tier #3)
+## Frontend Technologies
 
 - React
 - HTML/CSS
