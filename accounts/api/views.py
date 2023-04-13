@@ -2,7 +2,7 @@ from rest_framework.generics import ListCreateAPIView
 
 from accounts.models import User
 
-from api.accounts.serializers import UserSerializer
+from .serializers import UserSerializer
 
 
 class UserListView(ListCreateAPIView):
