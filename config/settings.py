@@ -27,8 +27,8 @@ INSTALLED_APPS = [
 
     # My apps
     'accounts.apps.AccountsConfig',
-    'watches.apps.WatchesConfig',
-    'photos.apps.PhotosConfig',
+    'categories.apps.CategoriesConfig',
+    'products.apps.ProductsConfig',
     'reviews.apps.ReviewsConfig',
 ]
 
@@ -87,7 +87,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 LANGUAGE_CODE = 'en-us'
 

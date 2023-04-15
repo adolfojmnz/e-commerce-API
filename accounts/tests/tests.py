@@ -10,6 +10,7 @@ class CreateUserMixin:
             username = 'test-user',
             email = 'user@testsuit.com',
             password = 'test$psswd',
+            birthdate = '1930-01-01'
         )
         return user
 

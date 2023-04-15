@@ -1,3 +1,5 @@
+from django.contrib.auth.hashers import make_password
+
 from rest_framework import serializers
 
 from accounts.models import User
@@ -8,6 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            'id',
             'email',
             'username',
             'first_name',
@@ -24,3 +27,9 @@ class UserSerializer(serializers.ModelSerializer):
             'password': {'write_only': True},
             'is_active': {'read_only': True},
         }
+
+    def save(self, **kwargs):
+        self.validated_data['password'] = make_password(
+            self.validated_data['password']
+        )
+        return super().save(**kwargs)
