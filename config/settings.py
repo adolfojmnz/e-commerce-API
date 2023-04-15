@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'watches.apps.WatchesConfig',
     'photos.apps.PhotosConfig',
     'reviews.apps.ReviewsConfig',
+    'products.apps.ProductsConfig',
 ]
 
 MIDDLEWARE = [
