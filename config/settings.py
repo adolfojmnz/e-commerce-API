@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'photos.apps.PhotosConfig',
     'reviews.apps.ReviewsConfig',
     'products.apps.ProductsConfig',
+    'categories.apps.CategoriesConfig',
 ]
 
 MIDDLEWARE = [
