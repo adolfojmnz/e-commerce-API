@@ -32,7 +32,6 @@ class UserViewMixin:
                                      request,
                                     *args,
                                     **kwargs):
-
         password = request.data.get('password')
         try:
             validate_password(password)
@@ -40,6 +39,13 @@ class UserViewMixin:
         except ValidationError as error:
             return Response(
                 {'Validation Error': f'{error}'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except TypeError as error:
+            if request.method in ['PATCH']:
+                return handler_func(request, *args, **kwargs)
+            return Response(
+                {'password': ['This field is required.']},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
