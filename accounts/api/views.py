@@ -27,7 +27,7 @@ class UserViewMixin:
     def handle_patch_request(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
 
-    def handle_request_on_valid_pass(self,
+    def handle_request_on_valid_password(self,
                                      handler_func,
                                      request,
                                     *args,
@@ -47,7 +47,7 @@ class UserViewMixin:
 class UserListView(UserViewMixin, ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
-        return self.handle_request_on_valid_pass(
+        return self.handle_request_on_valid_password(
             self.handle_post_request,
             request,
             *args,
@@ -58,7 +58,7 @@ class UserListView(UserViewMixin, ListCreateAPIView):
 class UserDetailView(UserViewMixin, RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
-        return self.handle_request_on_valid_pass(
+        return self.handle_request_on_valid_password(
             self.handle_put_request,
             request,
             *args,
@@ -66,7 +66,7 @@ class UserDetailView(UserViewMixin, RetrieveUpdateDestroyAPIView):
         )
 
     def patch(self, request, *args, **kwargs):
-        return self.handle_request_on_valid_pass(
+        return self.handle_request_on_valid_password(
             self.handle_patch_request,
             request,
             *args,
