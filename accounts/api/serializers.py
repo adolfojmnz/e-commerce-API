@@ -29,7 +29,11 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def save(self, **kwargs):
-        self.validated_data['password'] = make_password(
-            self.validated_data['password']
-        )
-        return super().save(**kwargs)
+        try:
+            self.validated_data['password'] = make_password(
+                self.validated_data['password']
+            )
+        except KeyError:
+            pass
+        finally:
+            return super().save(**kwargs)

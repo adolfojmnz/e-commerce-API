@@ -27,12 +27,11 @@ class UserViewMixin:
     def handle_patch_request(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
 
-    def handle_request_on_valid_pass(self,
+    def handle_request_on_valid_password(self,
                                      handler_func,
                                      request,
                                     *args,
                                     **kwargs):
-
         password = request.data.get('password')
         try:
             validate_password(password)
@@ -42,12 +41,19 @@ class UserViewMixin:
                 {'Validation Error': f'{error}'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        except TypeError as error:
+            if request.method in ['PATCH']:
+                return handler_func(request, *args, **kwargs)
+            return Response(
+                {'password': ['This field is required.']},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class UserListView(UserViewMixin, ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
-        return self.handle_request_on_valid_pass(
+        return self.handle_request_on_valid_password(
             self.handle_post_request,
             request,
             *args,
@@ -58,7 +64,7 @@ class UserListView(UserViewMixin, ListCreateAPIView):
 class UserDetailView(UserViewMixin, RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
-        return self.handle_request_on_valid_pass(
+        return self.handle_request_on_valid_password(
             self.handle_put_request,
             request,
             *args,
@@ -66,7 +72,7 @@ class UserDetailView(UserViewMixin, RetrieveUpdateDestroyAPIView):
         )
 
     def patch(self, request, *args, **kwargs):
-        return self.handle_request_on_valid_pass(
+        return self.handle_request_on_valid_password(
             self.handle_patch_request,
             request,
             *args,
