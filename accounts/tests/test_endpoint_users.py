@@ -20,17 +20,17 @@ class TestUsers(SetUpMixin):
     def test_post(self):
         response = self.client.post(reverse('users'),
                                     data=single_user_data)
-        serialiazer = UserSerializer(
+        serializer = UserSerializer(
             User.objects.get(username=single_user_data['username'])
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, serialiazer.data)
+        self.assertEqual(response.data, serializer.data)
         self.assertTrue(response.data != [])
 
     def test_get(self):
         [User.objects.create(**user_data) for user_data in users_data_list]
         response = self.client.get(reverse('users'))
-        serialiazer = UserSerializer(User.objects.all(), many=True)
+        serializer = UserSerializer(User.objects.all(), many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, serialiazer.data)
+        self.assertEqual(response.data, serializer.data)
         self.assertTrue(response.data != [])
