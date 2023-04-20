@@ -35,4 +35,8 @@ class TesteProduct(SetUp):
             Product.objects.get(pk=self.product.pk).specifications,
             self.product.specifications,
         )
+        self.assertEqual(
+            Product.objects.get(pk=self.product.pk).category,
+            self.product.category,
+        )
 
