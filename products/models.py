@@ -10,6 +10,11 @@ class Product(models.Model):
     vendor = models.ForeignKey('accounts.User',
                                on_delete=models.PROTECT,
                                related_name='products')
+    category = models.ForeignKey('categories.Category',
+                                 on_delete=models.PROTECT,
+                                 related_name='products',
+                                 blank=True,
+                                 null=True)
 
     class Meta:
         unique_together = ['vendor', 'name']
