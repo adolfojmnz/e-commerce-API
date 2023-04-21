@@ -4,3 +4,4 @@ from products.models import Product
 
 
 admin.site.register(Product)
+
