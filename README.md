@@ -1,6 +1,6 @@
 # E-Commerce Platform
 
-This is a work-in-progress e-commerce platform for selling watches and classical accessories for men. The goal is to provide a modern platform with capabilities for profuct listing, shopping cart, check process, order management, shipping, customer support, and communication bewtween vendors and customers. The platform is intended to be structure in a multi-tier architecture deployed on AWS.
+This is a work-in-progress e-commerce platform for selling products of different categories. The goal is to provide a modern platform with capabilities for profuct listing, shopping cart, check process, order management, shipping, customer support, and communication between vendors and customers. The platform is intended to be structure in a multi-tier architecture deployed on AWS using CI/CD pipelines.
 
 
 ## Cache
