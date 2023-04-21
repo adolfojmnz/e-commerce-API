@@ -11,11 +11,9 @@ from products.tests.utils import create_product
 def create_cart():
     cart = Cart.objects.create(
         user = create_customer(),
-        total = 100.00,
     )
     cart.save()
     return cart
-
 
 def create_cart_item():
     product = create_product()
