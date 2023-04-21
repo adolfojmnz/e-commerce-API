@@ -5,6 +5,8 @@ from accounts.tests.utils import (
 
 from carts.models import Cart, CartItem
 
+from products.tests.utils import create_product
+
 
 def create_cart():
     cart = Cart.objects.create(
@@ -16,7 +18,7 @@ def create_cart():
 
 
 def create_cart_item():
-    product = create_product(),
+    product = create_product()
     cart_item = CartItem.objects.create(
         cart = create_cart(),
         product = product,
@@ -24,5 +26,5 @@ def create_cart_item():
         sub_total = product.price * 10,
     )
     cart_item.save()
-    return cart_item()
+    return cart_item
 
