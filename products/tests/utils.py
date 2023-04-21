@@ -1,6 +1,6 @@
 from products.models import Product
 
-from accounts.tests.utils import create_user
+from accounts.tests.utils import create_vendor
 
 from categories.tests.utils import create_category
 
@@ -8,7 +8,7 @@ from products.tests.data import single_product_data
 
 
 def create_product():
-    vendor = create_user()
+    vendor = create_vendor()
     category = create_category()
     single_product_data['vendor'] = vendor
     single_product_data['category'] = category
