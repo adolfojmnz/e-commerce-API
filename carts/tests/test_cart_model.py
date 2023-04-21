@@ -22,10 +22,6 @@ class TestCart(SetUp):
             self.cart.user,
         )
         self.assertEqual(
-            Cart.objects.get(pk=self.cart.pk).total,
-            self.cart.total,
-        )
-        self.assertEqual(
             Cart.objects.get(pk=self.cart.pk).updated_on,
             self.cart.updated_on,
         )

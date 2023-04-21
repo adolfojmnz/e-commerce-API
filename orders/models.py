@@ -5,10 +5,6 @@ class Order(models.Model):
     user = models.ForeignKey('accounts.User',
                              on_delete=models.PROTECT,
                              related_name='orders')
-    total_cost = models.DecimalField(max_digits=10,
-                                     decimal_places=2,
-                                     blank=True,
-                                     null=True)
     created_on = models.DateTimeField(auto_now=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -26,11 +22,13 @@ class OrderItem(models.Model):
                                 on_delete=models.PROTECT,
                                 related_name='order_items')
     quantity = models.IntegerField()
-    total_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    sub_total = models.DecimalField(max_digits=10, decimal_places=2)
     added_on = models.DateTimeField(auto_now=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"""
             {self.order.user.username.capitalize()}\'s order item |
             order item No. {self.pk}
         """
+

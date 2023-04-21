@@ -5,10 +5,6 @@ class Cart(models.Model):
     user = models.ForeignKey('accounts.User',
                              on_delete=models.PROTECT,
                              related_name='carts')
-    total = models.DecimalField(max_digits=10,
-                                     decimal_places=2,
-                                     blank=True,
-                                     null=True)
     updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
@@ -32,3 +28,4 @@ class CartItem(models.Model):
             {self.cart.user.username.capitalize()}\'s cart item |
             cart item No. {self.pk}
         """
+
