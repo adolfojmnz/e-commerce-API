@@ -18,11 +18,11 @@ class ProductSerializer(serializers.ModelSerializer):
     available = serializers.SerializerMethodField()
     quantity = serializers.SerializerMethodField()
 
-    def get_available(self, obj):
-        return obj.inventory.quantity > 0
+    def get_available(self, product):
+        return product.inventory.quantity > 0 and product.available
 
-    def get_quantity(self, obj):
-        return obj.inventory.quantity
+    def get_quantity(self, product):
+        return product.inventory.quantity
 
     class Meta:
         model = Product
