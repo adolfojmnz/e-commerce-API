@@ -26,9 +26,14 @@ class ProductListView(ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def get_queryset(self):
+        if self.request.query_params.get('all', False) is False:
+            # List products whos inventory.quantity is greater than 0
+            self.queryset = self.queryset.filter(inventory__quantity__gt=0)
+        return super().get_queryset()
+
 
 class ProductSingleView(RetrieveUpdateDestroyAPIView):
     model = Product
     queryset = model.objects.all()
     serializer_class = ProductSerializer
-
