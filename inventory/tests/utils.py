@@ -1,11 +1,11 @@
 from products.tests.utils import create_product
 
-from inventory.models import Inventory
+from inventory.models import InventoryItem
 
 
 def create_inventory_item():
     product = create_product()
-    inventory_item = Inventory.objects.create(
+    inventory_item = InventoryItem.objects.create(
         product=product,
         quantity=10,
     )

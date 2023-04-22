@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from inventory.models import Inventory
+from inventory.models import InventoryItem
 
 from inventory.tests.utils import create_inventory_item
 
@@ -11,19 +11,19 @@ class SetUp(TestCase):
         self.inventory_item = create_inventory_item()
 
 
-class TestInventory(SetUp):
+class TestInventoryItem(SetUp):
 
     def test_inventory(self):
         self.assertEqual(
-            Inventory.objects.filter(pk=self.inventory_item.pk).exists(),
+            InventoryItem.objects.filter(pk=self.inventory_item.pk).exists(),
             True
         )
         self.assertEqual(
-            Inventory.objects.get(pk=self.inventory_item.pk).product,
+            InventoryItem.objects.get(pk=self.inventory_item.pk).product,
             self.inventory_item.product,
         )
         self.assertEqual(
-            Inventory.objects.get(pk=self.inventory_item.pk).quantity,
+            InventoryItem.objects.get(pk=self.inventory_item.pk).quantity,
             10,
         )
 
