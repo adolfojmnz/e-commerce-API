@@ -21,6 +21,11 @@ class OrderItem(models.Model):
     product = models.ForeignKey('products.Product',
                                 on_delete=models.PROTECT,
                                 related_name='order_items')
+
+    # product_values ensure that the values of the product
+    # at the time of order are stored in the order item.
+    product_values = models.JSONField()
+
     quantity = models.IntegerField()
     sub_total = models.DecimalField(max_digits=10, decimal_places=2)
     added_on = models.DateTimeField(auto_now=True)
@@ -31,4 +36,3 @@ class OrderItem(models.Model):
             {self.order.user.username.capitalize()}\'s order item |
             order item No. {self.pk}
         """
-
