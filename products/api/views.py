@@ -16,8 +16,11 @@ class ProductListView(ListCreateAPIView):
     serializer_class = ProductSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = ProductSerializer(data=request.data)
+        serializer = ProductSerializer(data=request.data,
+                                       context={'request': request})
         if serializer.is_valid():
+            vendor = request.user
+            serializer.validated_data['vendor'] = vendor
             product = serializer.save()
             InventoryItem.objects.create(
                 product=product,
