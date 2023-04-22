@@ -15,6 +15,7 @@ class Product(models.Model):
                                  related_name='products',
                                  blank=True,
                                  null=True)
+    available = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ['vendor', 'name']
