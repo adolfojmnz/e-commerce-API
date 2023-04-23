@@ -1,4 +1,5 @@
 from django.db.models import Sum
+from django.urls import reverse
 
 from rest_framework import serializers
 
@@ -13,14 +14,23 @@ class OrderSerializer(serializers.ModelSerializer):
         view_name='user-detail',
         read_only=True,
     )
+    order_items = serializers.SerializerMethodField()
     total = serializers.SerializerMethodField()
+
+    def get_order_items(self, order):
+        return [
+            self.context['request'].build_absolute_uri(
+                reverse('order-item-detail', kwargs={'pk': order_item.pk})
+            )
+            for order_item in order.order_items.all()
+        ]
 
     def get_total(self, order):
         return order.order_items.aggregate(Sum('sub_total'))['sub_total__sum']
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'total', 'created_on', 'updated_on']
+        fields = ['id', 'user', 'order_items', 'total', 'created_on', 'updated_on']
         extra_kwargs = {
             'total': {'read_only': True},
             'created_on': {'read_only': True},
