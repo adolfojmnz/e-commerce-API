@@ -4,7 +4,7 @@ from django.db import models
 class Cart(models.Model):
     user = models.ForeignKey('accounts.User',
                              on_delete=models.PROTECT,
-                             related_name='carts')
+                             related_name='cart')
     updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
