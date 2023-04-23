@@ -4,6 +4,8 @@ from rest_framework import serializers
 
 from carts.models import Cart, CartItem
 
+from products.models import Product
+
 
 class CartSerializer(serializers.ModelSerializer):
 
@@ -23,7 +25,20 @@ class CartSerializer(serializers.ModelSerializer):
 
 class CartItemSerializer(serializers.ModelSerializer):
 
+    cart = serializers.HyperlinkedRelatedField(
+        view_name='cart-detail',
+        queryset=Cart.objects.all(),
+    )
+    product = serializers.HyperlinkedRelatedField(
+        view_name='product-detail',
+        queryset=Product.objects.all(),
+    )
+
     class Meta:
         model = CartItem
         fields = '__all__'
-
+        extra_kwargs = {
+            'sub_total': {'read_only': True},
+            'added_on': {'read_only': True},
+            'updated_on': {'read_only': True},
+        }
