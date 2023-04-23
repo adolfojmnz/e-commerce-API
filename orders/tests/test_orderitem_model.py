@@ -26,6 +26,10 @@ class TestOrderItem(SetUp):
             self.order_item.product,
         )
         self.assertEqual(
+            OrderItem.objects.get(pk=self.order_item.pk).product_values,
+            self.order_item.product_values,
+        )
+        self.assertEqual(
             OrderItem.objects.get(pk=self.order_item.pk).quantity,
             self.order_item.quantity,
         )
