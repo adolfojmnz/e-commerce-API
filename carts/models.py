@@ -4,7 +4,7 @@ from django.db import models
 class Cart(models.Model):
     user = models.ForeignKey('accounts.User',
                              on_delete=models.PROTECT,
-                             related_name='carts')
+                             related_name='cart')
     updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
@@ -22,6 +22,10 @@ class CartItem(models.Model):
     sub_total = models.DecimalField(max_digits=10, decimal_places=2)
     added_on = models.DateTimeField(auto_now=True)
     updated_on = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # Ensure that a product can only be added once to a cart.
+        unique_together = ['cart', 'product']
 
     def __str__(self) -> str:
         return f"""
