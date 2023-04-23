@@ -23,6 +23,10 @@ class CartItem(models.Model):
     added_on = models.DateTimeField(auto_now=True)
     updated_on = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        # Ensure that a product can only be added once to a cart.
+        unique_together = ['cart', 'product']
+
     def __str__(self) -> str:
         return f"""
             {self.cart.user.username.capitalize()}\'s cart item |
