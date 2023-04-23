@@ -6,9 +6,15 @@ from carts.models import Cart, CartItem
 
 from products.models import Product
 
+from accounts.models import User
+
 
 class CartSerializer(serializers.ModelSerializer):
 
+    user = serializers.HyperlinkedRelatedField(
+        view_name='user-detail',
+        queryset=User.objects.all(),
+    )
     total = serializers.SerializerMethodField()
 
     def get_total(self, cart):
