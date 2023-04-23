@@ -27,3 +27,9 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = '__all__'
+        extra_kwargs = {
+            'product_values': {'required': False, 'allow_null': True},
+            'sub_total': {'required': False, 'allow_null': True},
+            'added_on': {'read_only': True},
+            'updated_on': {'read_only': True},
+        }
