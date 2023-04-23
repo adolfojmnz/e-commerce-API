@@ -4,9 +4,15 @@ from rest_framework import serializers
 
 from orders.models import Order, OrderItem
 
+from products.models import Product
+
 
 class OrderSerializer(serializers.ModelSerializer):
 
+    user = serializers.HyperlinkedRelatedField(
+        view_name='user-detail',
+        read_only=True,
+    )
     total = serializers.SerializerMethodField()
 
     def get_total(self, order):
@@ -23,6 +29,15 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+
+    order = serializers.HyperlinkedRelatedField(
+        view_name='order-detail',
+        queryset=Order.objects.all(),
+    )
+    product = serializers.HyperlinkedRelatedField(
+        view_name='product-detail',
+        queryset=Product.objects.all(),
+    )
 
     class Meta:
         model = OrderItem
