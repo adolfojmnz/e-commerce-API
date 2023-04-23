@@ -33,7 +33,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     cart = serializers.HyperlinkedRelatedField(
         view_name='cart-detail',
-        queryset=Cart.objects.all(),
+        read_only=True,
     )
     product = serializers.HyperlinkedRelatedField(
         view_name='product-detail',

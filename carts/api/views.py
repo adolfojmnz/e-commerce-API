@@ -35,7 +35,9 @@ class CartItemListView(ListCreateAPIView):
                     {'message': 'Product is not available'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+            cart = Cart.objects.get(user=request.user)
             quantity = serializer.validated_data['quantity']
+            serializer.validated_data['cart'] = cart
             serializer.validated_data['sub_total'] = (
                 product.price * quantity
             )
