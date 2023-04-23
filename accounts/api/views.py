@@ -9,14 +9,30 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from accounts.models import User
+from accounts.api.serializers import UserSerializer
 
-from .serializers import UserSerializer
+from carts.models import Cart
 
 
 class UserViewMixin:
     model = User
     queryset = model.objects.all()
     serializer_class = UserSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data,
+                        status=status.HTTP_201_CREATED,
+                        headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save()
+        # Assign a Cart to the user
+        cart = Cart.objects.create(user=serializer.instance)
+        cart.save()
 
     def handle_post_request(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
