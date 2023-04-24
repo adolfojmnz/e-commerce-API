@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, F
 from django.utils import timezone
 
 from rest_framework.generics import (
@@ -32,20 +32,18 @@ class OrderListView(ListAPIView):
             serializer.validated_data['user'] = request.user
             serializer.save()
             self.create_order_items(serializer.instance, cart_items)
+            self.update_product_inventory(cart_items)
             self.delete_cart_items(cart, cart_items)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_cart_items(self, cart):
+    def get_cart_items(self, cart) -> list:
+        """ Returns a queryset of cart items whose products are avalaible. """
         return cart.cart_items.filter(
-            Q(product__inventory__gt=0) & Q(product__available=True)
+            Q(product__available=True) &
+            Q(product__inventory__quantity__gt=0) &
+            Q(product__inventory__quantity__gte=F('quantity'))
         )
-
-    def delete_cart_items(self, cart, cart_items):
-        for cart_item in cart_items:
-            cart_item.delete()
-        cart.updated_on = timezone.now()
-        cart.save()
 
     def create_order_items(self, order, cart_items):
         for cart_item in cart_items:
@@ -67,6 +65,18 @@ class OrderListView(ListAPIView):
                 quantity=quantity,
                 sub_total=product.price * quantity,
             )
+
+    def update_product_inventory(self, cart_items):
+        for cart_item in cart_items:
+            product = cart_item.product
+            product.inventory.quantity -= cart_item.quantity
+            product.inventory.save()
+
+    def delete_cart_items(self, cart, cart_items):
+        for cart_item in cart_items:
+            cart_item.delete()
+        cart.updated_on = timezone.now()
+        cart.save()
 
 
 class OrderSingleView(RetrieveAPIView):
