@@ -7,9 +7,9 @@ from json import dumps
 
 from accounts.models import User
 from accounts.api.serializers import UserSerializer
-
-from .data import single_user_data
-from .data import users_data_list
+from accounts.tests.data import (
+    single_user_data, users_data_list
+)
 
 
 class SetUpMixin(TestCase):
