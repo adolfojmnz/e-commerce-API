@@ -1,4 +1,4 @@
-products_data_list = [
+product_data_list = [
     {
         "name": "Men's Watch Cobalt (Walnut/Blue)",
         "brand": "Holzkern",
@@ -46,7 +46,7 @@ products_data_list = [
 ]
 
 
-single_product_data = {
+product_data = {
     "name": "Men's Watch Cobalt (Walnut/Gray)",
     "brand": "Holzkern",
     "description": """

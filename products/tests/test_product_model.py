@@ -1,9 +1,7 @@
 from django.test import TestCase
 
-from accounts.models import User
-
 from products.models import Product
-from products.tests.utils import create_product
+from products.tests.helpers import create_product
 
 
 class SetUp(TestCase):
