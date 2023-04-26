@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from categories.models import Category
 
-from categories.tests.utils import create_category
+from categories.tests.helpers import create_category
 
 
 class SetUp(TestCase):
