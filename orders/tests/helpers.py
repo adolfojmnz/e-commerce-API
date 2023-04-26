@@ -1,8 +1,6 @@
-from accounts.tests.utils import create_customer
+from accounts.tests.helpers import UserTestMixin
 
-from products.tests.utils import create_product
-
-from carts.tests.utils import create_cart
+from products.tests.helpers import create_product
 
 from orders.models import Order, OrderItem
 
@@ -20,7 +18,7 @@ def get_product_values(product):
 
 def create_order():
     order = Order.objects.create(
-        user = create_customer(),
+        user = UserTestMixin().create_customer(),
     )
     order.save()
     return order

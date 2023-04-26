@@ -1,16 +1,13 @@
-from accounts.tests.utils import (
-    create_customer,
-    create_vendor,
-)
+from accounts.tests.helpers import UserTestMixin
+
+from products.tests.helpers import create_product
 
 from carts.models import Cart, CartItem
-
-from products.tests.utils import create_product
 
 
 def create_cart():
     cart = Cart.objects.create(
-        user = create_customer(),
+        user = UserTestMixin().create_customer(),
     )
     cart.save()
     return cart
