@@ -141,4 +141,5 @@ db.sqlite3
 # django_extensions
 .notebook
 
-TODOs.md
+# Hidden files
+.*
