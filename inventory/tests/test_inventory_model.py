@@ -2,13 +2,13 @@ from django.test import TestCase
 
 from inventory.models import InventoryItem
 
-from inventory.tests.utils import create_inventory_item
+from products.tests.helpers import create_product
 
 
 class SetUp(TestCase):
 
     def setUp(self):
-        self.inventory_item = create_inventory_item()
+        self.inventory_item = create_product().inventory
 
 
 class TestInventoryItem(SetUp):
@@ -24,6 +24,6 @@ class TestInventoryItem(SetUp):
         )
         self.assertEqual(
             InventoryItem.objects.get(pk=self.inventory_item.pk).quantity,
-            10,
+            1,
         )
 
