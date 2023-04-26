@@ -1,4 +1,7 @@
+from django.utils import timezone
+
 from rest_framework.generics import (
+    ListAPIView, RetrieveAPIView,
     ListCreateAPIView, RetrieveUpdateDestroyAPIView
 )
 from rest_framework import status
@@ -8,13 +11,13 @@ from carts.models import Cart, CartItem
 from carts.api.serializers import CartSerializer, CartItemSerializer
 
 
-class CartListView(ListCreateAPIView):
+class CartListView(ListAPIView):
     model = Cart
     queryset = model.objects.all()
     serializer_class = CartSerializer
 
 
-class CartSingleView(RetrieveUpdateDestroyAPIView):
+class CartSingleView(RetrieveAPIView):
     model = Cart
     queryset = model.objects.all()
     serializer_class = CartSerializer
@@ -42,6 +45,8 @@ class CartItemListView(ListCreateAPIView):
                 product.price * quantity
             )
             serializer.save()
+            cart.updated_on = timezone.now()
+            cart.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

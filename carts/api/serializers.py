@@ -1,4 +1,5 @@
 from django.db.models import Sum
+from django.urls import reverse
 
 from rest_framework import serializers
 
@@ -15,14 +16,23 @@ class CartSerializer(serializers.ModelSerializer):
         view_name='user-detail',
         queryset=User.objects.all(),
     )
+    cart_items = serializers.SerializerMethodField()
     total = serializers.SerializerMethodField()
+
+    def get_cart_items(self, cart):
+        return [
+            self.context['request'].build_absolute_uri(
+                reverse('cart-item-detail', kwargs={'pk': cart_item.pk})
+            )
+            for cart_item in cart.cart_items.all()
+        ]
 
     def get_total(self, cart):
         return cart.cart_items.aggregate(Sum('sub_total'))['sub_total__sum']
 
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'total', 'updated_on']
+        fields = ['id', 'user', 'cart_items', 'total', 'updated_on']
         extra_kwargs = {
             'total': {'read_only': True},
             'updated_on': {'read_only': True},

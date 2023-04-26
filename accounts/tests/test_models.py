@@ -2,14 +2,13 @@ from django.test import TestCase
 
 from accounts.models import User
 
-from accounts.tests.utils import create_user
-from accounts.tests.data import single_user_data
+from accounts.tests.helpers import UserTestMixin
 
 
-class SetUp(TestCase):
+class SetUp(UserTestMixin, TestCase):
 
     def setUp(self):
-        self.user = create_user()
+        self.user = self.create_user()
 
 
 class TestUser(SetUp):

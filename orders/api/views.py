@@ -1,4 +1,5 @@
-from django.db.models import Q
+from django.db.models import Q, F
+from django.utils import timezone
 
 from rest_framework.generics import (
     ListAPIView, RetrieveAPIView,
@@ -8,6 +9,8 @@ from rest_framework.response import Response
 
 from orders.models import Order, OrderItem
 from orders.api.serializers import OrderSerializer, OrderItemSerializer
+
+from carts.models import Cart
 
 
 class OrderListView(ListAPIView):
@@ -19,9 +22,8 @@ class OrderListView(ListAPIView):
         serializer = OrderSerializer(data=request.data,
                                      context={'request': request})
         if serializer.is_valid():
-            cart_items = request.user.cart.all()[0].cart_items.filter(
-                Q(product__inventory__gt=0) & Q(product__available=True)
-            )
+            cart = Cart.objects.get(user=request.user)
+            cart_items = self.get_cart_items(cart)
             if not cart_items.exists():
                 return Response(
                     {'error': 'No available items in cart.'},
@@ -30,9 +32,18 @@ class OrderListView(ListAPIView):
             serializer.validated_data['user'] = request.user
             serializer.save()
             self.create_order_items(serializer.instance, cart_items)
-            self.remove_cart_items(cart_items)
+            self.update_product_inventory(cart_items)
+            self.delete_cart_items(cart, cart_items)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_cart_items(self, cart) -> list:
+        """ Returns a queryset of cart items whose products are avalaible. """
+        return cart.cart_items.filter(
+            Q(product__available=True) &
+            Q(product__inventory__quantity__gt=0) &
+            Q(product__inventory__quantity__gte=F('quantity'))
+        )
 
     def create_order_items(self, order, cart_items):
         for cart_item in cart_items:
@@ -55,9 +66,17 @@ class OrderListView(ListAPIView):
                 sub_total=product.price * quantity,
             )
 
-    def remove_cart_items(self, cart_items):
+    def update_product_inventory(self, cart_items):
+        for cart_item in cart_items:
+            product = cart_item.product
+            product.inventory.quantity -= cart_item.quantity
+            product.inventory.save()
+
+    def delete_cart_items(self, cart, cart_items):
         for cart_item in cart_items:
             cart_item.delete()
+        cart.updated_on = timezone.now()
+        cart.save()
 
 
 class OrderSingleView(RetrieveAPIView):

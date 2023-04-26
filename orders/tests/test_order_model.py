@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from orders.models import Order
-from orders.tests.utils import create_order
+from orders.tests.helpers import create_order
 
 
 class SetUp(TestCase):
