@@ -16,22 +16,22 @@ def get_product_values(product):
     }
 
 
-def create_order():
+def create_order(user=None):
     order = Order.objects.create(
-        user = UserTestMixin().create_customer(),
+        user = user or UserTestMixin().create_customer(),
     )
     order.save()
     return order
 
 
-def create_order_item():
-    product = create_product()
+def create_order_item(product=None, order=None, quantity=10):
+    product = product or create_product()
     order_item = OrderItem.objects.create(
-        order = create_order(),
+        order = order or create_order(),
         product = product,
         product_values = get_product_values(product),
-        quantity = 10,
-        sub_total = product.price * 10,
+        quantity = quantity,
+        sub_total = product.price * quantity,
     )
     order_item.save()
     return order_item

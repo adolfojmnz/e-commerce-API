@@ -12,13 +12,13 @@ def create_cart(user=None):
     cart.save()
     return cart
 
-def create_cart_item(cart=None, product=None):
+def create_cart_item(cart=None, product=None, quantity=10):
     product = product or create_product()
     cart_item = CartItem.objects.create(
         cart = cart or create_cart(),
         product = product,
-        quantity = 10,
-        sub_total = product.price * 10,
+        quantity = quantity,
+        sub_total = product.price * quantity,
     )
     cart_item.save()
     return cart_item
