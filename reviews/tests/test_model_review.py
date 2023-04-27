@@ -1,16 +1,16 @@
 from django.test import TestCase
 
 from reviews.models import Review
-from reviews.tests.utils import create_review
+from reviews.tests.helpers import create_review
 
 
-class SetUp(TestCase):
+class SetUpTestCase(TestCase):
 
     def setUp(self):
         self.review = create_review()
 
 
-class TestReview(SetUp):
+class TestReview(SetUpTestCase):
 
     def test_review(self):
         self.assertEqual(

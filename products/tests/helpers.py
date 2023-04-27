@@ -13,8 +13,10 @@ from products.tests.data import (
 
 def create_product(vendor=None, category=None, data=product_data,
                    append_to_inventory=True):
-    data['vendor'] = vendor if vendor else UserTestMixin().create_vendor()
-    data['category'] = category if category else create_category()
+
+    data['vendor'] = vendor or UserTestMixin().create_vendor()
+    data['category'] = category or create_category()
+
     product = Product.objects.create(**data)
     if append_to_inventory:
         add_product_to_inventory(product)

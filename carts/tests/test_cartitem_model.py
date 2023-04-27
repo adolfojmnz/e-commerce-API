@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from carts.models import CartItem
-from carts.tests.utils import create_cart_item
+from carts.tests.helpers import create_cart_item
 
 
 class SetUp(TestCase):
