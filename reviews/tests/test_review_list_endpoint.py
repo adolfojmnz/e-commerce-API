@@ -2,12 +2,14 @@ from django.test import TestCase
 from django.urls import reverse
 
 from rest_framework import status
-from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.request import Request
+from rest_framework.test import APIClient, APIRequestFactory
 
 from accounts.tests.helpers import UserTestMixin
 
 from products.tests.helpers import create_product
+
+from orders.tests.helpers import create_order, create_order_item
 
 from reviews.models import Review
 from reviews.api.serializers import ReviewSerializer
@@ -15,11 +17,13 @@ from reviews.tests.helpers import create_review
 from reviews.tests.data import review_data
 
 
-class SetUpTestCase(TestCase):
+class SetUpTestCase(UserTestMixin, TestCase):
 
     def setUp(self):
-        self.customer = UserTestMixin().create_customer()
+        self.customer = self.create_customer()
         self.product = create_product()
+        order = create_order(user=self.customer)
+        self.order = create_order_item(product=self.product, order=order)
 
         self.client = APIClient()
         self.client.force_authenticate(user=self.customer)
@@ -46,6 +50,7 @@ class TestReviewListEndpoint(SetUpTestCase):
     def test_post(self):
         review_data['product'] = self.product.pk
         review_data['user'] = self.customer.pk
+        review_data['order'] = self.order.pk
 
         reponse = self.client.post(self.url, data=review_data)
         created_review = Review.objects.get(pk=reponse.data['id'])

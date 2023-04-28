@@ -17,28 +17,29 @@ class TestReview(SetUpTestCase):
             Review.objects.filter(pk=self.review.pk).exists(),
             True,
         )
+        retrived_review = Review.objects.get(pk=self.review.pk)
         self.assertEqual(
-            Review.objects.get(pk=self.review.pk).product,
+            retrived_review.product,
             self.review.product,
         )
         self.assertEqual(
-            Review.objects.get(pk=self.review.pk).user,
+            retrived_review.user,
             self.review.user,
         )
         self.assertEqual(
-            Review.objects.get(pk=self.review.pk).title,
+            retrived_review.title,
             self.review.title,
         )
         self.assertEqual(
-            Review.objects.get(pk=self.review.pk).text,
+            retrived_review.text,
             self.review.text,
         )
         self.assertEqual(
-            Review.objects.get(pk=self.review.pk).rating,
+            retrived_review.rating,
             self.review.rating,
         )
         self.assertEqual(
-            Review.objects.get(pk=self.review.pk).date,
+            retrived_review.date,
             self.review.date,
         )
 

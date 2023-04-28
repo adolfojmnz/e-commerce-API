@@ -4,12 +4,14 @@ from django.test import TestCase
 from django.urls import reverse
 
 from rest_framework import status
-from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.request import Request
+from rest_framework.test import APIClient, APIRequestFactory
 
 from accounts.tests.helpers import UserTestMixin
 
 from products.tests.helpers import create_product
+
+from orders.tests.helpers import create_order, create_order_item
 
 from reviews.models import Review
 from reviews.api.serializers import ReviewSerializer
@@ -17,11 +19,13 @@ from reviews.tests.helpers import create_review
 from reviews.tests.data import review_data
 
 
-class SetUpTestCase(TestCase):
+class SetUpTestCase(UserTestMixin, TestCase):
 
     def setUp(self):
-        customer = UserTestMixin().create_customer()
+        customer = self.create_customer()
         product = create_product()
+        order = create_order(user=customer)
+        create_order_item(product=product, order=order)
         self.review = create_review(user=customer, product=product)
 
         self.client = APIClient()
@@ -30,6 +34,11 @@ class SetUpTestCase(TestCase):
         self.request = Request(APIRequestFactory().get('/'))
 
         self.url = reverse('review-detail', kwargs={'pk': self.review.pk})
+
+    def update_review_data(self):
+        review_data['title'] = 'New Title'
+        review_data['text'] = 'New Text'
+        review_data['rating'] = 1
 
 
 class TestReviewListEndpoint(SetUpTestCase):
@@ -45,9 +54,7 @@ class TestReviewListEndpoint(SetUpTestCase):
         self.assertEqual(Review.objects.count(), 1)
 
     def test_patch(self):
-        review_data['title'] = 'New Title'
-        review_data['text'] = 'New Text'
-        review_data['rating'] = 1
+        self.update_review_data()
         response = self.client.patch(self.url,
                                      dumps(review_data),
                                      content_type='application/json')
