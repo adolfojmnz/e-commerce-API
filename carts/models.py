@@ -19,7 +19,6 @@ class CartItem(models.Model):
                                 on_delete=models.PROTECT,
                                 related_name='cart_items')
     quantity = models.IntegerField()
-    sub_total = models.DecimalField(max_digits=10, decimal_places=2)
     added_on = models.DateTimeField(auto_now=True)
     updated_on = models.DateTimeField(auto_now=True)
 

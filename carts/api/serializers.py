@@ -1,4 +1,3 @@
-from django.db.models import Sum
 from django.urls import reverse
 
 from rest_framework import serializers
@@ -28,7 +27,14 @@ class CartSerializer(serializers.ModelSerializer):
         ]
 
     def get_total(self, cart):
-        return cart.cart_items.aggregate(Sum('sub_total'))['sub_total__sum']
+        """ Calculate the total price of all cart items in a cart by
+            multiplying the quantity of each cart item by the price of the
+            product it is associated with and then summing the results.
+        """
+        total = 0
+        for cart_item in cart.cart_items.all():
+            total += cart_item.quantity * cart_item.product.price
+        return total
 
     class Meta:
         model = Cart
@@ -49,12 +55,19 @@ class CartItemSerializer(serializers.ModelSerializer):
         view_name='product-detail',
         queryset=Product.objects.all(),
     )
+    sub_total = serializers.SerializerMethodField()
+
+    def get_sub_total(self, cart_item):
+        return cart_item.quantity * cart_item.product.price
 
     class Meta:
         model = CartItem
-        fields = '__all__'
+        fields = [
+            'id', 'cart', 'product', 'quantity',
+            'sub_total', 'added_on', 'updated_on',
+        ]
         extra_kwargs = {
-            'sub_total': {'read_only': True},
+            # 'sub_total': {'read_only': True},
             'added_on': {'read_only': True},
             'updated_on': {'read_only': True},
         }

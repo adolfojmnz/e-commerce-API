@@ -41,9 +41,6 @@ class CartItemListView(ListCreateAPIView):
             cart = Cart.objects.get(user=request.user)
             quantity = serializer.validated_data['quantity']
             serializer.validated_data['cart'] = cart
-            serializer.validated_data['sub_total'] = (
-                product.price * quantity
-            )
             serializer.save()
             cart.updated_on = timezone.now()
             cart.save()

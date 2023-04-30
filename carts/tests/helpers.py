@@ -18,7 +18,6 @@ def create_cart_item(cart=None, product=None, quantity=10):
         cart = cart or create_cart(),
         product = product,
         quantity = quantity,
-        sub_total = product.price * quantity,
     )
     cart_item.save()
     return cart_item
