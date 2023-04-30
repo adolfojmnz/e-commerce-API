@@ -13,29 +13,7 @@ from orders.api.serializers import OrderSerializer, OrderItemSerializer
 from carts.models import Cart
 
 
-class OrderListView(ListAPIView):
-    model = Order
-    queryset = model.objects.all()
-    serializer_class = OrderSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer = OrderSerializer(data=request.data,
-                                     context={'request': request})
-        if serializer.is_valid():
-            cart = Cart.objects.get(user=request.user)
-            cart_items = self.get_cart_items(cart)
-            if not cart_items.exists():
-                return Response(
-                    {'error': 'No available items in cart.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            serializer.validated_data['user'] = request.user
-            serializer.save()
-            self.create_order_items(serializer.instance, cart_items)
-            self.update_product_inventory(cart_items)
-            self.delete_cart_items(cart, cart_items)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class OrderListMixin:
 
     def get_cart_items(self, cart) -> list:
         """ Returns a queryset of cart items whose products are avalaible. """
@@ -77,6 +55,32 @@ class OrderListView(ListAPIView):
             cart_item.delete()
         cart.updated_on = timezone.now()
         cart.save()
+
+
+class OrderListView(OrderListMixin, ListAPIView):
+    model = Order
+    queryset = model.objects.all()
+    serializer_class = OrderSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = OrderSerializer(data=request.data,
+                                     context={'request': request})
+        if serializer.is_valid():
+            cart = Cart.objects.get(user=request.user)
+            cart_items = self.get_cart_items(cart)
+            if not cart_items.exists():
+                return Response(
+                    {'error': 'No available items in cart.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer.validated_data['user'] = request.user
+            serializer.save()
+            self.create_order_items(serializer.instance, cart_items)
+            self.update_product_inventory(cart_items)
+            self.delete_cart_items(cart, cart_items)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderSingleView(RetrieveAPIView):
