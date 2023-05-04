@@ -47,6 +47,32 @@ class CartSerializer(serializers.ModelSerializer):
 
 class CartItemSerializer(serializers.ModelSerializer):
 
+    product_name = serializers.SerializerMethodField()
+    product_image = serializers.SerializerMethodField()
+    product_brand = serializers.SerializerMethodField()
+    product_price = serializers.SerializerMethodField()
+    product_vendor = serializers.SerializerMethodField()
+    product_available = serializers.SerializerMethodField()
+
+    def get_product_name(self, cart_item):
+        return cart_item.product.name
+
+    def get_product_image(self, cart_item):
+        return cart_item.product.image.url
+
+    def get_product_brand(self, cart_item):
+        return cart_item.product.brand
+
+    def get_product_price(self, cart_item):
+        return cart_item.product.price
+
+    def get_product_vendor(self, cart_item):
+        return cart_item.product.vendor.username
+
+    def get_product_available(self, cart_item):
+        return (cart_item.product.available and
+                cart_item.product.inventory.quantity > 0)
+
     cart = serializers.HyperlinkedRelatedField(
         view_name='cart-detail',
         read_only=True,
@@ -63,11 +89,12 @@ class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = [
-            'id', 'cart', 'product', 'quantity',
-            'sub_total', 'added_on', 'updated_on',
+            'id', 'cart', 'product', 'quantity', 'sub_total',
+            'product_name', 'product_image', 'product_brand',
+            'product_price', 'product_vendor', 'product_available',
+            'added_on', 'updated_on',
         ]
         extra_kwargs = {
-            # 'sub_total': {'read_only': True},
             'added_on': {'read_only': True},
             'updated_on': {'read_only': True},
         }
