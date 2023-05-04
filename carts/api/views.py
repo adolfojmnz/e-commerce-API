@@ -6,6 +6,7 @@ from rest_framework.generics import (
 )
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from carts.models import Cart, CartItem
 from carts.api.serializers import CartSerializer, CartItemSerializer
@@ -39,13 +40,17 @@ class CartItemListView(ListCreateAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             cart = Cart.objects.get(user=request.user)
-            quantity = serializer.validated_data['quantity']
+            serializer.validated_data['quantity']
             serializer.validated_data['cart'] = cart
             serializer.save()
             cart.updated_on = timezone.now()
             cart.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        cart = Cart.objects.get(user=self.request.user)
+        return CartItem.objects.filter(cart=cart)
 
 
 class CartItemSingleView(RetrieveUpdateDestroyAPIView):
