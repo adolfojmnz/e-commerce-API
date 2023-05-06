@@ -27,6 +27,13 @@ class ReviewListMixin:
         except Order.DoesNotExist:  # or Product.DoesNotExist
             return False
 
+    def isinstance_of_int(self, value):
+        try:
+            int(value)
+            return True
+        except ValueError:
+            return False
+
 
 class ReviewListView(ReviewListMixin, ListCreateAPIView):
     model = Review
@@ -51,9 +58,12 @@ class ReviewListView(ReviewListMixin, ListCreateAPIView):
     def get_queryset(self):
         """ Filter reviews by product """
         queryset = super().get_queryset()
-        product_id = self.request.query_params.get('product', None)
-        if product_id is type(int):
-            queryset = queryset.filter(product=product_id)
+        if self.request.query_params.get('product'):
+            product_id = self.request.query_params.get('product')
+            if self.isinstance_of_int(product_id):
+                queryset = queryset.filter(product=product_id)
+            else:
+                queryset = queryset.none()
         return queryset
 
 
