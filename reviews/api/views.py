@@ -48,6 +48,14 @@ class ReviewListView(ReviewListMixin, ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def get_queryset(self):
+        """ Filter reviews by product """
+        queryset = super().get_queryset()
+        product_id = self.request.query_params.get('product', None)
+        if product_id is type(int):
+            queryset = queryset.filter(product=product_id)
+        return queryset
+
 
 class ReviewSingleView(RetrieveUpdateDestroyAPIView):
     model = Review
