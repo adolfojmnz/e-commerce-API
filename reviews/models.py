@@ -19,7 +19,7 @@ class Review(models.Model):
                              on_delete=models.PROTECT,
                              related_name='reviews')
     title = models.CharField(max_length=64)
-    text = models.CharField(max_length=512)
+    text = models.CharField(max_length=2048)
     rating = models.IntegerField()
     date = models.DateField(auto_now=True)
 
