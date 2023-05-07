@@ -19,22 +19,21 @@ class CartSerializer(serializers.ModelSerializer):
     total = serializers.SerializerMethodField()
 
     def get_cart_items(self, cart):
+        """ Returns a list containing the absolute urls
+            for each cart item
+        """
         return [
             self.context['request'].build_absolute_uri(
                 reverse('cart-item-detail', kwargs={'pk': cart_item.pk})
-            )
-            for cart_item in cart.cart_items.all()
+            ) for cart_item in cart.cart_items.all()
         ]
 
     def get_total(self, cart):
-        """ Calculate the total price of all cart items in a cart by
-            multiplying the quantity of each cart item by the price of the
-            product it is associated with and then summing the results.
-        """
-        total = 0
-        for cart_item in cart.cart_items.all():
-            total += cart_item.quantity * cart_item.product.price
-        return total
+        """ Returns the total cost for all items in the cart """
+        return sum([
+            cart_item.quantity * cart_item.product.price
+            for cart_item in cart.cart_items.all()
+        ])
 
     class Meta:
         model = Cart
