@@ -12,6 +12,15 @@ from carts.models import Cart, CartItem
 from carts.api.serializers import CartSerializer, CartItemSerializer
 
 
+class UserCartView(RetrieveAPIView):
+    model = Cart
+    queryset = model.objects.all()
+    serializer_class = CartSerializer
+
+    def get_object(self):
+        return Cart.objects.get(user=self.request.user)
+
+
 class CartListView(ListAPIView):
     model = Cart
     queryset = model.objects.all()
