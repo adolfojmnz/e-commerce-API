@@ -37,6 +37,7 @@ class CartItemListView(ListCreateAPIView):
     model = CartItem
     queryset = model.objects.all()
     serializer_class = CartItemSerializer
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         serializer = CartItemSerializer(data=request.data,
@@ -46,6 +47,12 @@ class CartItemListView(ListCreateAPIView):
             if not (product.available and product.inventory.quantity > 0):
                 return Response(
                     {'message': 'Product is not available'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if not (serializer.validated_data['quantity'] <
+                    product.inventory.quantity):
+                return Response(
+                    {'message': 'Not enough quantity available'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             cart = Cart.objects.get(user=request.user)

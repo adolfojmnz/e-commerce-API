@@ -78,7 +78,12 @@ class CartItemSerializer(serializers.ModelSerializer):
     )
     product = serializers.HyperlinkedRelatedField(
         view_name='product-detail',
+        read_only=True,
+    )
+    product_id = serializers.PrimaryKeyRelatedField(
+        source='product',
         queryset=Product.objects.all(),
+        write_only=True,
     )
     sub_total = serializers.SerializerMethodField()
 
@@ -88,12 +93,26 @@ class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = [
-            'id', 'cart', 'product', 'quantity', 'sub_total',
-            'product_name', 'product_image', 'product_brand',
-            'product_price', 'product_vendor', 'product_available',
-            'added_on', 'updated_on',
+            'id', 'cart', 'product', 'product_id', 'quantity', 'sub_total',
+            'product_name', 'product_image', 'product_brand', 'product_price',
+            'product_vendor', 'product_available', 'added_on', 'updated_on',
         ]
         extra_kwargs = {
             'added_on': {'read_only': True},
             'updated_on': {'read_only': True},
         }
+        unique_together = ['cart', 'product_id']
+
+    def unique_together_validation(self, attrs):
+        """ Ensures that a product can only be added once to a cart """
+        cart = attrs['cart']
+        product = attrs['product']
+        if cart.cart_items.filter(product=product).exists():
+            raise serializers.ValidationError(
+                {'message': 'This product is already in your cart.'}
+            )
+        return attrs
+
+    def save(self, **kwargs):
+        self.unique_together_validation(self.validated_data)
+        return super().save(**kwargs)
