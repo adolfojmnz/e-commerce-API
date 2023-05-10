@@ -5,6 +5,7 @@ from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -94,3 +95,11 @@ class UserDetailView(UserViewMixin, RetrieveUpdateDestroyAPIView):
             *args,
             **kwargs,
         )
+
+
+class CurrentUserView(UserDetailView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
