@@ -32,7 +32,8 @@ class ProductListView(ListCreateAPIView):
     def get_queryset(self):
         if self.request.query_params.get('all', False) is False:
             # Only list available products
-            self.queryset = self.queryset.filter(available=True)
+            self.queryset = self.queryset.filter(available=True,
+                                                 inventory__quantity__gt=0)
         return super().get_queryset()
 
 

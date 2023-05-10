@@ -11,7 +11,10 @@ class User(AbstractUser):
     # for further information refer to https://docs.djangoproject.com/en/4.1/ref/contrib/auth/
 
     # custom fields
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    avatar_url = models.CharField(default='',
+                                  max_length=512,
+                                  blank=True,
+                                  null=True)
     birthdate = models.DateField()
     about = models.CharField(default='', max_length=512)
 

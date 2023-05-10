@@ -6,9 +6,19 @@ from rest_framework.generics import (
 )
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from carts.models import Cart, CartItem
 from carts.api.serializers import CartSerializer, CartItemSerializer
+
+
+class UserCartView(RetrieveAPIView):
+    model = Cart
+    queryset = model.objects.all()
+    serializer_class = CartSerializer
+
+    def get_object(self):
+        return Cart.objects.get(user=self.request.user)
 
 
 class CartListView(ListAPIView):
@@ -27,6 +37,7 @@ class CartItemListView(ListCreateAPIView):
     model = CartItem
     queryset = model.objects.all()
     serializer_class = CartItemSerializer
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         serializer = CartItemSerializer(data=request.data,
@@ -38,17 +49,24 @@ class CartItemListView(ListCreateAPIView):
                     {'message': 'Product is not available'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+            if not (serializer.validated_data['quantity'] <=
+                    product.inventory.quantity):
+                return Response(
+                    {'message': 'Not enough quantity available'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             cart = Cart.objects.get(user=request.user)
-            quantity = serializer.validated_data['quantity']
+            serializer.validated_data['quantity']
             serializer.validated_data['cart'] = cart
-            serializer.validated_data['sub_total'] = (
-                product.price * quantity
-            )
             serializer.save()
             cart.updated_on = timezone.now()
             cart.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        cart = Cart.objects.get(user=self.request.user)
+        return CartItem.objects.filter(cart=cart)
 
 
 class CartItemSingleView(RetrieveUpdateDestroyAPIView):

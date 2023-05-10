@@ -6,36 +6,17 @@ from rest_framework.generics import (
 )
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from orders.models import Order, OrderItem
 from orders.api.serializers import OrderSerializer, OrderItemSerializer
 
 from carts.models import Cart
 
+from .utils import is_integer
 
-class OrderListView(ListAPIView):
-    model = Order
-    queryset = model.objects.all()
-    serializer_class = OrderSerializer
 
-    def post(self, request, *args, **kwargs):
-        serializer = OrderSerializer(data=request.data,
-                                     context={'request': request})
-        if serializer.is_valid():
-            cart = Cart.objects.get(user=request.user)
-            cart_items = self.get_cart_items(cart)
-            if not cart_items.exists():
-                return Response(
-                    {'error': 'No available items in cart.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            serializer.validated_data['user'] = request.user
-            serializer.save()
-            self.create_order_items(serializer.instance, cart_items)
-            self.update_product_inventory(cart_items)
-            self.delete_cart_items(cart, cart_items)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class OrderListMixin:
 
     def get_cart_items(self, cart) -> list:
         """ Returns a queryset of cart items whose products are avalaible. """
@@ -79,6 +60,41 @@ class OrderListView(ListAPIView):
         cart.save()
 
 
+class OrderListView(OrderListMixin, ListAPIView):
+    model = Order
+    queryset = model.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = OrderSerializer(data=request.data,
+                                     context={'request': request})
+        if serializer.is_valid():
+            cart = Cart.objects.get(user=request.user)
+            cart_items = self.get_cart_items(cart)
+            if not cart_items.exists():
+                return Response(
+                    {'error': 'No available items in cart.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer.validated_data['user'] = request.user
+            serializer.save()
+            self.create_order_items(serializer.instance, cart_items)
+            self.update_product_inventory(cart_items)
+            self.delete_cart_items(cart, cart_items)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if len(self.request.query_params) == 0:
+            queryset = queryset.none()
+        if self.request.query_params.get('user') == 'current':
+            queryset = queryset.filter(user=self.request.user)
+        return queryset
+
+
 class OrderSingleView(RetrieveAPIView):
     model = Order
     queryset = model.objects.all()
@@ -89,6 +105,17 @@ class OrderItemListView(ListAPIView):
     model = OrderItem
     queryset = model.objects.all()
     serializer_class = OrderItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        order = self.request.query_params.get('order')
+        if order is not None:
+            if is_integer(order):
+                queryset = queryset.filter(order=order)
+            else:
+                queryset = queryset.none()
+        return queryset
 
 
 class OrderItemSingleView(RetrieveAPIView):

@@ -30,10 +30,6 @@ class TestCartItem(SetUp):
             self.cart_item.quantity,
         )
         self.assertEqual(
-            CartItem.objects.get(pk=self.cart_item.pk).sub_total,
-            self.cart_item.sub_total,
-        )
-        self.assertEqual(
             CartItem.objects.get(pk=self.cart_item.pk).added_on,
             self.cart_item.added_on,
         )

@@ -1,12 +1,18 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView
+)
 
 from accounts.models import User
 from accounts.api.serializers import UserSerializer
@@ -94,3 +100,22 @@ class UserDetailView(UserViewMixin, RetrieveUpdateDestroyAPIView):
             *args,
             **kwargs,
         )
+
+
+class CurrentUserView(UserDetailView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == status.HTTP_200_OK:
+            user = User.objects.get(username=request.data['username'])
+            user.last_login = timezone.now()
+            user.save()
+        return response
+

@@ -22,7 +22,7 @@ class OrderItem(models.Model):
                                 on_delete=models.PROTECT,
                                 related_name='order_items')
 
-    # product_values ensure that the values of the product
+    # product_values ensures that the values of the product
     # at the time of order are stored in the order item.
     product_values = models.JSONField()
 

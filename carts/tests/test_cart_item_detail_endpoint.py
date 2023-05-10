@@ -48,7 +48,6 @@ class TestCartItemDetailEndpoint(SetUpTestCase):
     def test_patch(self):
         data = {
             'quantity': 20,
-            'sub_total': self.product.price * 20,
             'updated_on': timezone.now().__str__(),
         }
         response = self.client.patch(self.url,
