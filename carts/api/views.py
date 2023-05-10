@@ -49,7 +49,7 @@ class CartItemListView(ListCreateAPIView):
                     {'message': 'Product is not available'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            if not (serializer.validated_data['quantity'] <
+            if not (serializer.validated_data['quantity'] <=
                     product.inventory.quantity):
                 return Response(
                     {'message': 'Not enough quantity available'},
