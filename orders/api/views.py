@@ -6,11 +6,14 @@ from rest_framework.generics import (
 )
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from orders.models import Order, OrderItem
 from orders.api.serializers import OrderSerializer, OrderItemSerializer
 
 from carts.models import Cart
+
+from .utils import is_integer
 
 
 class OrderListMixin:
@@ -93,6 +96,17 @@ class OrderItemListView(ListAPIView):
     model = OrderItem
     queryset = model.objects.all()
     serializer_class = OrderItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        order = self.request.query_params.get('order')
+        if order is not None:
+            if is_integer(order):
+                queryset = queryset.filter(order=order)
+            else:
+                queryset = queryset.none()
+        return queryset
 
 
 class OrderItemSingleView(RetrieveAPIView):
