@@ -57,7 +57,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         return cart_item.product.name
 
     def get_product_image(self, cart_item):
-        return cart_item.product.image.url
+        return cart_item.product.image_url
 
     def get_product_brand(self, cart_item):
         return cart_item.product.brand
