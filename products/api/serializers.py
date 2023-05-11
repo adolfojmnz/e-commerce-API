@@ -16,8 +16,14 @@ class ProductSerializer(serializers.ModelSerializer):
     )
     category = serializers.HyperlinkedRelatedField(
         view_name='category-detail',
-        queryset=Category.objects.all(),
+        read_only=True,
     )
+    category_id = serializers.PrimaryKeyRelatedField(
+        source='category',
+        queryset=Category.objects.all(),
+        write_only=True,
+    )
+
     available = serializers.SerializerMethodField()
     quantity = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
@@ -41,7 +47,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id', 'name', 'brand', 'image_url', 'description', 'specifications',
-            'price', 'vendor', 'category', 'available', 'quantity', 'rating',
+            'price', 'vendor', 'category', 'category_id', 'available', 'quantity', 'rating',
             'total_reviews',
         ]
 
