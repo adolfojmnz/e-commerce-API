@@ -114,5 +114,13 @@ class CartItemSerializer(serializers.ModelSerializer):
         return attrs
 
     def save(self, **kwargs):
-        self.unique_together_validation(self.validated_data)
+        if self.context['request'].method == 'POST':
+            self.validated_data = self.unique_together_validation(
+                self.validated_data
+            )
+        if self.context['request'].method in ['PUT', 'PATCH']:
+            if self.validated_data.get('product_id'):
+                raise serializers.ValidationError(
+                    {'message': 'You cannot change the product of a cart item.'}
+                )
         return super().save(**kwargs)
