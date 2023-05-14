@@ -5,38 +5,55 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.test import APIClient, APIRequestFactory
 
-from accounts.tests.helpers import UserTestMixin
-
-from carts.tests.helpers import create_cart, create_cart_item
-
 from orders.models import Order
 from orders.api.serializers import OrderSerializer
-from orders.tests.helpers import create_order, create_order_item
+
+from tests.helpers import (
+    AccountsTestHelpers,
+    CategoriesTestHelpers,
+    ProductsTestHelpers,
+    InventoryTestHelpers,
+    CartTestHelpers,
+    OrdersTestHelpers,
+)
 
 
 class SetUpTestCase(TestCase):
 
-    def setUp(self):
-        self.customer = UserTestMixin().create_customer()
-        cart = create_cart(user=self.customer)
-        self.cart_item = create_cart_item(cart, quantity=1)
-
+    def authenticate(self):
         self.client = APIClient()
         self.client.force_authenticate(user=self.customer)
-
         self.request = Request(APIRequestFactory().get('/'))
 
+    def create_related_objects(self):
+        self.vendor = AccountsTestHelpers().create_vendor()
+        self.customer = AccountsTestHelpers().create_customer()
+        category = CategoriesTestHelpers().create_category()
+        self.product = ProductsTestHelpers().create_product(
+            vendor=self.vendor, category=category
+        )
+        self.inventory_item = InventoryTestHelpers().create_inventory_item(
+            product=self.product, quantity=10
+        )
+        self.cart = CartTestHelpers().create_cart(user=self.customer)
+        self.cart_item = CartTestHelpers().create_cart_item(
+            cart=self.cart, product=self.product, quantity=10
+        )
+
+    def setUp(self):
+        self.create_related_objects()
+        self.authenticate()
         self.url = reverse('orders')
+        return super().setUp()
 
 
 class TestOrderListEndpoint(SetUpTestCase):
 
     def test_get(self):
-        order = create_order(user=self.customer)
-        create_order_item(self.cart_item.product, order, quantity=1)
-        response = self.client.get(self.url)
+        OrdersTestHelpers().create_order(user=self.customer)
+        response = self.client.get(f'{self.url}?user=current')
         serializer = OrderSerializer(
-            Order.objects.all(),
+            Order.objects.filter(user=self.customer),
             many=True,
             context={'request': self.request},
         )

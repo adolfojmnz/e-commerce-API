@@ -8,29 +8,44 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.test import APIClient, APIRequestFactory
 
-from accounts.tests.helpers import UserTestMixin
-
-from products.tests.helpers import create_product
-
 from carts.models import CartItem
-from carts.tests.helpers import create_cart, create_cart_item
 from carts.api.serializers import CartItemSerializer
+
+from tests.helpers import (
+    AccountsTestHelpers,
+    CategoriesTestHelpers,
+    ProductsTestHelpers,
+    InventoryTestHelpers,
+    CartTestHelpers,
+)
 
 
 class SetUpTestCase(TestCase):
 
-    def setUp(self):
-        self.product = create_product()
-        self.customer = UserTestMixin().create_customer()
-        self.cart = create_cart(user=self.customer)
-        self.cart_item = create_cart_item(self.cart, self.product)
-
+    def authenticate(self):
         self.client = APIClient()
         self.client.force_authenticate(user=self.customer)
-
         self.request = Request(APIRequestFactory().get('/'))
 
-        self.url = reverse('cart-item-detail', kwargs={'pk': self.cart_item.id})
+    def create_related_objects(self):
+        vendor = AccountsTestHelpers().create_vendor()
+        category = CategoriesTestHelpers().create_category()
+        self.customer = AccountsTestHelpers().create_customer()
+        self.product = ProductsTestHelpers().create_product(
+            vendor=vendor, category=category
+        )
+        InventoryTestHelpers().create_inventory_item(
+            product=self.product, quantity=20
+        )
+        self.cart = CartTestHelpers().create_cart(user=self.customer)
+        self.cart_item = CartTestHelpers().create_cart_item(
+            cart=self.cart, product=self.product, quantity=10
+        )
+
+    def setUp(self):
+        self.create_related_objects()
+        self.authenticate()
+        self.url = reverse('cart-item-detail', kwargs={'pk': self.cart_item.pk})
 
 
 class TestCartItemDetailEndpoint(SetUpTestCase):
@@ -38,7 +53,7 @@ class TestCartItemDetailEndpoint(SetUpTestCase):
     def test_get(self):
         response = self.client.get(self.url)
         serializer = CartItemSerializer(
-            CartItem.objects.get(pk=response.data['id']),
+            CartItem.objects.get(pk=self.cart_item.pk),
             context={'request': self.request},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -54,7 +69,7 @@ class TestCartItemDetailEndpoint(SetUpTestCase):
                                      dumps(data),
                                      content_type='application/json')
         serializer = CartItemSerializer(
-            CartItem.objects.get(pk=response.data['id']),
+            CartItem.objects.get(pk=self.cart_item.pk),
             context={'request': self.request},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -63,4 +78,5 @@ class TestCartItemDetailEndpoint(SetUpTestCase):
     def test_delete(self):
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.data, None)
         self.assertEqual(CartItem.objects.count(), 0)

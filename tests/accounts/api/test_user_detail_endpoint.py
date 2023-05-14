@@ -1,23 +1,27 @@
+from json import dumps
+
 from django.test import TestCase, Client
 from django.urls import reverse
 
 from rest_framework import status
 
-from json import dumps
-
 from accounts.models import User
 from accounts.api.serializers import UserSerializer
-from accounts.tests.data import (
-    single_user_data, users_data_list
+
+from tests.data import (
+    customer_single as customer_data,
 )
+from tests.helpers import AccountsTestHelpers
+
 
 
 class SetUpMixin(TestCase):
 
-    def setUp(self) -> None:
-        self.user = User.objects.create(**single_user_data)
+    def setUp(self):
+        self.user = AccountsTestHelpers().create_user()
         self.url = reverse('user-detail', kwargs={'pk': self.user.pk})
         self.client = Client()
+        return super().setUp()
 
 
 class TestUsers(SetUpMixin):
@@ -31,7 +35,7 @@ class TestUsers(SetUpMixin):
 
     def test_put(self):
         response = self.client.put(self.url,
-                                   data=dumps(users_data_list[0]),
+                                   data=dumps(customer_data),
                                    content_type='application/json')
         serializer = UserSerializer(User.objects.get(pk=self.user.pk))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -40,8 +44,8 @@ class TestUsers(SetUpMixin):
 
     def test_patch(self):
         response = self.client.patch(self.url,
-                                   data=dumps({'username': 'username'}),
-                                   content_type='application/json')
+                                     data=dumps({'username': 'username'}),
+                                     content_type='application/json')
         serializer = UserSerializer(User.objects.get(pk=self.user.pk))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)

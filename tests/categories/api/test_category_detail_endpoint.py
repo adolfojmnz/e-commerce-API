@@ -5,16 +5,18 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from categories.models import Category
-from categories.tests.helpers import create_category
 from categories.api.serializers import CategorySerializer
+
+from tests.helpers import CategoriesTestHelpers
 
 
 class SetUpTestCase(TestCase):
 
     def setUp(self):
-        self.category = create_category()
+        self.category = CategoriesTestHelpers().create_category()
         self.url = reverse('category-detail', kwargs={'pk': self.category.pk})
         self.client = APIClient()
+        return super().setUp()
 
 
 class InventoryItemListEndppointTestCase(SetUpTestCase):
@@ -50,5 +52,6 @@ class InventoryItemListEndppointTestCase(SetUpTestCase):
     def test_delete(self):
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.data, None)
         self.assertEqual(Category.objects.count(), 0)
 
