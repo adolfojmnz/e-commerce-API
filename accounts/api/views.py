@@ -25,6 +25,9 @@ class UserViewMixin:
     queryset = model.objects.all()
     serializer_class = UserSerializer
 
+    def get_queryset(self):
+        return self.queryset.filter(is_active=True)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -99,6 +102,14 @@ class UserDetailView(UserViewMixin, RetrieveUpdateDestroyAPIView):
             request,
             *args,
             **kwargs,
+        )
+
+    def delete(self, request, *args, **kwargs):
+        user = self.get_object()
+        user.is_active = False
+        user.save()
+        return Response(
+            status=status.HTTP_204_NO_CONTENT,
         )
 
 
