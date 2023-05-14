@@ -115,9 +115,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     def save(self, **kwargs):
         if self.context['request'].method == 'POST':
-            self.validated_data = self.unique_together_validation(
-                self.validated_data
-            )
+            self.unique_together_validation(self.validated_data)
         if self.context['request'].method in ['PUT', 'PATCH']:
             if self.validated_data.get('product_id'):
                 raise serializers.ValidationError(
