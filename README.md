@@ -8,10 +8,13 @@ The goal is to create a modern platform where users can buy and sell products, t
  - Shopping Cart
  - Order Management
  - Products Reviews
- - Products Questions (not implemented yet)
- - Messages Between Sellers And Customers (not implemented yet)
+ - Q&A In Products (not implemented yet)
+ - Private Messages Between Sellers And Customers (not implemented yet)
 
 The platform is intended to be structured in a multi-tier architecture deployed on AWS.
+
+The presentation layer (front-end) es being developed as Netx.js App. <br>
+Repo: [E-Commerce-Next.js](https://github.com/Eadwulf/e-commerce-nextjs)
 <br><br>
 
 
@@ -20,13 +23,13 @@ The platform is intended to be structured in a multi-tier architecture deployed 
 ### Clone The Repository
 
 ```console
-git clone https://github.com/Eadwulf/e-commerce-api
+git clone https://github.com/Eadwulf/e-commerce-API
 ```
 
 ### Change Directory
 
 ```console
-cd e-commerce-api
+cd e-commerce-API
 ```
 
 ### Install The Dependencies And Activate The Virtual Environment
@@ -43,7 +46,31 @@ pipenv install && pipenv shell
 
 # Database Setup
 
-The project uses a PostgreSQL database. Configured as follows
+This project requires a PosgreSQL database, but alternatively, you could use a Sqlite3 database.
+
+## Setup With Sqlite3 Database
+
+### Change The Database Configurations In The `config/settings.py`
+
+```python
+# config/settings.py
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+```
+
+If you decided to set up the Sqile3 database, skip the next section and jump to
+the **Environment Variables** section
+<br>
+
+
+## Setup With PostgreSQL Database
+
+### The Database Settings Are Set As Follows
 
 ```python
 # config/settings.py
@@ -103,8 +130,6 @@ ALTER ROLE <database_user> SET timezone TO 'UTC';
 ```sql
 \q
 ```
-<br>
-
 
 # Environment Variables
 
@@ -122,17 +147,59 @@ DATABASE_USER=<your_database_user>
 DATABASE_PASSWORD=<your_database_password>
 ```
 <aside>
-    💡 Be aware that <em>django-environ</em> is required. Such dependency should be installed
-    by running <em>pipenv install</em>
+    💡 Note:
+    <ul>
+      <li>
+        <p>
+          <em>django-environ</em> is required to load the environment variables in the `config/settings.py` file.
+          Such dependency should be installed by running <em>pipenv install</em>
+        </p>
+     </li>
+     <li>
+       <p>
+          If you are setting a Sqlite3 database instead of a PostgreSQL, don't include the environment variables for the
+          database as they are not required when working with Sqlite3.
+       </p>
+     </li>
 </aside>
 <br>
 
-### Apply the migrations
+### Generate The SECRET_KEY
+
+To run the project, you will need to set a secret key to the `SECRET_KEY` environment variable.
+Create one by running
+
+```console
+$ python manage.py shell
+```
+
+Once in the Django Shell
+
+```python
+>>> from django.core.management.utils import get_random_secret_key
+
+>>> get_random_secret_key()
+```
+
+It will output a key such as
+
+```python
+'30p0cw(#l0z7%2ao7t)%!%h+(v3y+6(#=vbj8x&-snly(#(pu#'
+```
+
+<aside>
+  💡 Add the key to the corresponding environment variable.
+    Don't forget to remove the single quotation marks (') at the beginning and the end of the key
+</aside>
+<br>
+
+# Migrations
+
+Once the database is set up as well as the environment variables, you can proceed to apply the migrations
 
 ```python
 python manage.py migrate
 ```
-<br>
 
 # Tests
 
