@@ -24,7 +24,7 @@ class ProductListView(ListCreateAPIView):
             product = serializer.save()
             InventoryItem.objects.create(
                 product=product,
-                quantity=request.data.get('quantity', 1),
+                quantity=int(request.data.get('quantity', 1)),
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

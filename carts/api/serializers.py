@@ -57,7 +57,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         return cart_item.product.name
 
     def get_product_image(self, cart_item):
-        return cart_item.product.image.url
+        return cart_item.product.image_url
 
     def get_product_brand(self, cart_item):
         return cart_item.product.brand
@@ -114,5 +114,11 @@ class CartItemSerializer(serializers.ModelSerializer):
         return attrs
 
     def save(self, **kwargs):
-        self.unique_together_validation(self.validated_data)
+        if self.context['request'].method == 'POST':
+            self.unique_together_validation(self.validated_data)
+        if self.context['request'].method in ['PUT', 'PATCH']:
+            if self.validated_data.get('product_id'):
+                raise serializers.ValidationError(
+                    {'message': 'You cannot change the product of a cart item.'}
+                )
         return super().save(**kwargs)
