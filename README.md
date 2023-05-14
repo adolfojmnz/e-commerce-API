@@ -224,3 +224,206 @@ Ran 49 tests in 16.937s
 OK
 Destroying test database for alias 'default'...
 ```
+
+# Endpoints Documentation
+
+## Introduction
+
+This documentation describes the usage and functionality of the endpoints exposed by the API. It provides information on the available resources, request, and response formats.
+
+- **Request Format**: application/json
+- **Response Format**: application/json
+
+# Users
+
+- **Description**:
+- **URL**: localhost:8000/api/users
+- **HTTP Method**: GET, POST
+
+### GET Request
+
+- **Description**: Retrieves the list of active users
+- **************************Status Code:************************** 200 OK
+- **Example**:
+
+    Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/users \
+       -H "Content-Type: application/json"
+    ```
+
+    Response:
+
+    ```json
+    [
+    	{
+    		"id": {userId},
+    		"email": "bob.fellow@localhost.com",
+    		"username": "bob",
+    		"first_name": "Bob",
+    		"last_name": "Fellow",
+    		"about": "Short about sample",
+    		"avatar_url": "/media/avatars/bob_01.jpg",
+    		"birthdate": "1980-04-11",
+    		"is_active": true,
+    		"last_login": "2023-04-11T12:40:52Z",
+    		"date_joined": "2023-04-11T12:39:46Z"
+    	},
+    	{
+    		"id": {userId},
+    		"email": "ana.fellow@localhost.com",
+    		"username": "ana",
+    		"first_name": "Ana",
+    		"last_name": "Fellow",
+    		"about": "Short about sample",
+    		"avatar_url": "/media/avatars/ana_01.jpg",
+    		"birthdate": "1999-12-31",
+    		"is_active": true,
+    		"last_login": null,
+    		"date_joined": "2023-04-26T11:04:21.103660Z"
+    	}
+    ]
+    ```
+
+
+### POST Request
+
+- **Description**: Creates a new user
+- ********Status Code:******** 201 CREATED, 400 Bad Request
+- **Example**:
+
+    Request:
+
+    ```bash
+    curl -X POST localhost:8000/api/users \
+       -H "Content-Type: application/json" \
+    	 -d '{"username": "pete", "password": "pa/^#ss63wd", "birthdate": "1980-04-11"}'
+    ```
+
+    Response:
+
+    ```json
+    {
+    	"id": {userId},
+    	"email": "",
+    	"username": "pete",
+    	"first_name": "",
+    	"last_name": "",
+    	"about": "",
+    	"avatar_url": "",
+    	"birthdate": "1980-04-11",
+    	"is_active": true,
+    	"last_login": "",
+    	"date_joined": "2023-04-11T12:39:46Z"
+    }
+    ```
+
+
+# Users/{userId}
+
+- **Description**:
+- **URL**: localhost:8000/api/users/{userId}
+- **HTTP Method**: GET, PATCH, DELETE
+
+### GET Request
+
+- **Description**: Retrieves the list of active users
+- **************************Status Code:************************** 200 OK
+- **Example**:
+
+    Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/users/{userId} \
+       -H "Content-Type: application/json"
+    ```
+
+    Response:
+
+    ```json
+    {
+    	"id": {userId},
+    	"email": "ana.fellow@localhost.com",
+    	"username": "ana",
+    	"first_name": "Ana",
+    	"last_name": "Fellow",
+    	"about": "Short about sample",
+    	"avatar_url": "/media/avatars/ana_01.jpg",
+    	"birthdate": "1999-12-31",
+    	"is_active": true,
+    	"last_login": null,
+    	"date_joined": "2023-04-26T11:04:21.103660Z"
+    }
+    ```
+
+
+### PATCH Request
+
+- **Description**: Updates an existing user
+- ********Status Code:******** 200 OK, 400 Bad Request
+- **Example**:
+
+    Request:
+
+    ```bash
+    curl -X PATCH localhost:8000/api/users/{userId} \
+       -H "Content-Type: application/json" \
+    	 -d '{"email": "pete.fellow@localhost.com", "first_name": "Pete", "last_name": "Fellow"}'
+    ```
+
+    Response:
+
+    ```json
+    {
+    	"id": {userId},
+    	"email": "pete.fellow@localhost.com",
+    	"username": "pete",
+    	"first_name": "Pete",
+    	"last_name": "Fellow",
+    	"about": "",
+    	"avatar_url": "",
+    	"birthdate": "1980-04-11",
+    	"is_active": true,
+    	"last_login": "",
+    	"date_joined": "2023-04-11T12:39:46Z"
+    }
+    ```
+
+
+### DELETE Request
+
+- **Description**: Sets an existing user as inactive (is_active = False)
+- ********Status Code:******** 204 NO CONTENT
+- **Example**:
+
+    Request:
+
+    ```bash
+    curl -X DELETE localhost:8000/api/users/{userId} \
+       -H "Content-Type: application/json"
+    ```
+
+    Response:
+
+    ```json
+    []
+    ```
+
+
+# Users/current
+
+- **Description**: This endpoint inherits the functionalities of the `api/users/{userId}` endpoint.
+
+    Interfacing with this endpoint is just as it is with the one it inherits, being the only difference the URL used to make the requests.
+
+- **URL**: localhost:8000/api/users/**************current**************
+- **HTTP Method**: GET, PATCH, DELETE
+- **Example**:
+
+    Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/users/current \
+       -H "Content-Type: application/json"
+    ```
