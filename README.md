@@ -225,6 +225,10 @@ OK
 Destroying test database for alias 'default'...
 ```
 
+# Entity Relationship Diagram
+
+![Database ERD](./ERD.png)
+
 # Endpoints Documentation
 
 ## Introduction
@@ -234,9 +238,59 @@ This documentation describes the usage and functionality of the endpoints expose
 - **Request Format**: application/json
 - **Response Format**: application/json
 
-# Users
+## JWT Endpoints
 
-- **Description**:
+### Token
+
+- **Description**: Obtain JWT token pair (access and refresh tokens) for a registered user.
+- **URL**: localhost:8000/api/token/
+- **HTTP Method**: POST
+- **Example**:
+
+    Request:
+
+    ```bash
+    curl -X POST localhost:8000/api/token/ \
+       -H "Content-Type: application/json" \
+       -d '{"username": "bob", "password": "pa/^#ss63wd"}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY4NDU5NzY4OCwiaWF0IjoxNjg0NTExMjg4LCJqdGkiOiI5NjIxOGU3NDgzYTg0YzM0ODc5YjZmYWQyYWI3NzljYSIsInVzZXJfaWQiOjF9.ka4BJ94bCRUzcJNfxVSabr0cApdUm0haXmPVFg81dKA",
+      "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg0NTk3Njg4LCJpYXQiOjE2ODQ1MTEyODgsImp0aSI6ImI2ZmYxNjExZTEwYTQxNjY5OWZmOTc3YzBmM2U2ZTUzIiwidXNlcl9pZCI6MX0.oWe8pwBdfv8s8mWZl81k_swle1mVdOSOJEGZYJtY8nQ"
+    }
+    ```
+
+
+### Token/refresh
+
+- **Description**:  Obtain a new access token by using an active refresh token.
+- **URL**: localhost:8000/api/token/refresh/
+- **HTTP Method**: POST
+- **Example**:
+
+    Request:
+
+    ```bash
+    curl -X POST localhost:8000/api/token/refresh/ \
+       -H "Content-Type: application/json" \
+       -d '{"username": "bob", "password": "pa/^#ss63wd"}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg0NTk3Njg4LCJpYXQiOjE2ODQ1MTEyODgsImp0aSI6ImI2ZmYxNjExZTEwYTQxNjY5OWZmOTc3YzBmM2U2ZTUzIiwidXNlcl9pZCI6MX0.oWe8pwBdfv8s8mWZl81k_swle1mVdOSOJEGZYJtY8nQ"
+    }
+    ```
+
+
+## Users
+
 - **URL**: localhost:8000/api/users
 - **HTTP Method**: GET, POST
 
@@ -257,39 +311,39 @@ This documentation describes the usage and functionality of the endpoints expose
 
     ```json
     [
-    	{
-    		"id": {userId},
-    		"email": "bob.fellow@localhost.com",
-    		"username": "bob",
-    		"first_name": "Bob",
-    		"last_name": "Fellow",
-    		"about": "Short about sample",
-    		"avatar_url": "/media/avatars/bob_01.jpg",
-    		"birthdate": "1980-04-11",
-    		"is_active": true,
-    		"last_login": "2023-04-11T12:40:52Z",
-    		"date_joined": "2023-04-11T12:39:46Z"
-    	},
-    	{
-    		"id": {userId},
-    		"email": "ana.fellow@localhost.com",
-    		"username": "ana",
-    		"first_name": "Ana",
-    		"last_name": "Fellow",
-    		"about": "Short about sample",
-    		"avatar_url": "/media/avatars/ana_01.jpg",
-    		"birthdate": "1999-12-31",
-    		"is_active": true,
-    		"last_login": null,
-    		"date_joined": "2023-04-26T11:04:21.103660Z"
-    	}
+      {
+        "id": {userId},
+        "email": "bob.fellow@localhost.com",
+        "username": "bob",
+        "first_name": "Bob",
+        "last_name": "Fellow",
+        "about": "Short about sample",
+        "avatar_url": "/media/avatars/bob_01.jpg",
+        "birthdate": "1980-04-11",
+        "is_active": true,
+        "last_login": "2023-04-11T12:40:52Z",
+        "date_joined": "2023-04-11T12:39:46Z"
+      },
+      {
+        "id": {userId},
+        "email": "ana.fellow@localhost.com",
+        "username": "ana",
+        "first_name": "Ana",
+        "last_name": "Fellow",
+        "about": "Short about sample",
+        "avatar_url": "/media/avatars/ana_01.jpg",
+        "birthdate": "1999-12-31",
+        "is_active": true,
+        "last_login": null,
+        "date_joined": "2023-04-26T11:04:21.103660Z"
+      }
     ]
     ```
 
 
 ### POST Request
 
-- **Description**: Creates a new user
+- **Description**: Creates a new user with the given data.
 - ********Status Code:******** 201 CREATED, 400 Bad Request
 - **Example**:
 
@@ -297,39 +351,38 @@ This documentation describes the usage and functionality of the endpoints expose
 
     ```bash
     curl -X POST localhost:8000/api/users \
-       -H "Content-Type: application/json" \
-    	 -d '{"username": "pete", "password": "pa/^#ss63wd", "birthdate": "1980-04-11"}'
+         -H "Content-Type: application/json" \
+         -d '{"username": "pete", "password": "pa/^#ss63wd", "birthdate": "1980-04-11"}'
     ```
 
     Response:
 
     ```json
     {
-    	"id": {userId},
-    	"email": "",
-    	"username": "pete",
-    	"first_name": "",
-    	"last_name": "",
-    	"about": "",
-    	"avatar_url": "",
-    	"birthdate": "1980-04-11",
-    	"is_active": true,
-    	"last_login": "",
-    	"date_joined": "2023-04-11T12:39:46Z"
+      "id": {userId},
+      "email": "",
+      "username": "pete",
+      "first_name": "",
+      "last_name": "",
+      "about": "",
+      "avatar_url": "",
+      "birthdate": "1980-04-11",
+      "is_active": true,
+      "last_login": "",
+      "date_joined": "2023-04-11T12:39:46Z"
     }
     ```
 
 
 # Users/{userId}
 
-- **Description**:
 - **URL**: localhost:8000/api/users/{userId}
 - **HTTP Method**: GET, PATCH, DELETE
 
 ### GET Request
 
-- **Description**: Retrieves the list of active users
-- **************************Status Code:************************** 200 OK
+- **Description**: Retrieves the user for userId
+- **************************Status Code:************************** 200 OK, 404 NOT FOUND
 - **Example**:
 
     Request:
@@ -343,17 +396,17 @@ This documentation describes the usage and functionality of the endpoints expose
 
     ```json
     {
-    	"id": {userId},
-    	"email": "ana.fellow@localhost.com",
-    	"username": "ana",
-    	"first_name": "Ana",
-    	"last_name": "Fellow",
-    	"about": "Short about sample",
-    	"avatar_url": "/media/avatars/ana_01.jpg",
-    	"birthdate": "1999-12-31",
-    	"is_active": true,
-    	"last_login": null,
-    	"date_joined": "2023-04-26T11:04:21.103660Z"
+      "id": {userId},
+      "email": "ana.fellow@localhost.com",
+      "username": "ana",
+      "first_name": "Ana",
+      "last_name": "Fellow",
+      "about": "Short about sample",
+      "avatar_url": "/media/avatars/ana_01.jpg",
+      "birthdate": "1999-12-31",
+      "is_active": true,
+      "last_login": null,
+      "date_joined": "2023-04-26T11:04:21.103660Z"
     }
     ```
 
@@ -369,24 +422,25 @@ This documentation describes the usage and functionality of the endpoints expose
     ```bash
     curl -X PATCH localhost:8000/api/users/{userId} \
        -H "Content-Type: application/json" \
-    	 -d '{"email": "pete.fellow@localhost.com", "first_name": "Pete", "last_name": "Fellow"}'
+       -H "Authorization: Bearer {access_token}" \
+       -d '{"email": "pete.fellow@localhost.com", "first_name": "Pete", "last_name": "Fellow"}'
     ```
 
     Response:
 
     ```json
     {
-    	"id": {userId},
-    	"email": "pete.fellow@localhost.com",
-    	"username": "pete",
-    	"first_name": "Pete",
-    	"last_name": "Fellow",
-    	"about": "",
-    	"avatar_url": "",
-    	"birthdate": "1980-04-11",
-    	"is_active": true,
-    	"last_login": "",
-    	"date_joined": "2023-04-11T12:39:46Z"
+      "id": {userId},
+      "email": "pete.fellow@localhost.com",
+      "username": "pete",
+      "first_name": "Pete",
+      "last_name": "Fellow",
+      "about": "",
+      "avatar_url": "",
+      "birthdate": "1980-04-11",
+      "is_active": true,
+      "last_login": "",
+      "date_joined": "2023-04-11T12:39:46Z"
     }
     ```
 
@@ -394,20 +448,21 @@ This documentation describes the usage and functionality of the endpoints expose
 ### DELETE Request
 
 - **Description**: Sets an existing user as inactive (is_active = False)
-- ********Status Code:******** 204 NO CONTENT
+- ********Status Code:******** 204 NO CONTENT, 404 NOT FOUND
 - **Example**:
 
     Request:
 
     ```bash
     curl -X DELETE localhost:8000/api/users/{userId} \
-       -H "Content-Type: application/json"
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
     ```
 
     Response:
 
     ```json
-    []
+    {"message": "The user has been set as inactive."}
     ```
 
 
@@ -425,5 +480,669 @@ This documentation describes the usage and functionality of the endpoints expose
 
     ```bash
     curl -X GET localhost:8000/api/users/current \
-       -H "Content-Type: application/json"
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
     ```
+
+
+## Products
+
+- **Description**:  Allows the retrieval of the product list as well as the creation of new ones.
+- **URL**: localhost:8000/api/products
+- **HTTP Methods**: GET, POST
+- **Example**:
+
+    GET Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/products \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
+    ```
+
+    GET Response (status code 200):
+
+    ```json
+    [
+      {
+        "id": {productId},
+        "name": "Cobalt (Walnut/Blue)",
+        "brand": "Holzkern",
+        "image_url": {imageURL},
+        "description": "Cobalt is a naturally occurring element that can be found in the ground, the air and also in the bodies of living creatures. Its bonding properties have been used for the coloration of glass and ceramics since antiquity.",
+        "specifications": {
+          "color": "Walnut/Gray",
+          "movement": "quartz",
+          "release date": "2023-04-10",
+          "case material": "metal-wood",
+          "diameter (mm)": 42,
+          "is waterproof": true,
+          "bracelet material": "metal-wood",
+          "has date indicator": false,
+          "has chronograph features": false
+        },
+        "price": "499.00",
+        "vendor": {userId},
+        "category": {categoryId},
+        "available": true,
+        "quantity": 7,
+        "rating": null,
+        "total_reviews": 0
+    	},
+    	{
+          "id": {productId},
+          "name": "ASUS TUF Gaming A16 Advantage Edition (2023)",
+          "brand": "ASUS",
+          "image_url": {imageURL},
+          "description": "Jump right into the action with the TUF Gaming A16 Advantage™ Edition. Stream and multitask with ease thanks to the latest AMD Ryzen™ 9 7940HS CPU and up to 32GB of blisteringly fast 4800MHz DDR5 RAM on Windows 11. Leverage the full gaming performance of up to a AMD Radeon™ RX 7700S GPU with AMD Smart Access Graphics. When your game library gets full, an empty M.2 NVMe SSD slot makes upgrading storage capacity a breeze.",
+          "specifications": {
+            "OS": "Windows 11",
+            "CPU": "Ryzen 9 7940HS",
+            "GPU": "Raedon RX 7700S",
+            "RAM": "32GB 4800MHz DDR5 Dual-Channel",
+            "Disk": "2TB PCIe 4.0 2x SSD",
+            "Refresh Rate": "240Hz QHD, 165Hz FHD",
+            "Charging Type": "Type-C  50% in 30 mins",
+            "Military Grade": "MIL-STD 810H Passed",
+            "Battery Capacity": "90Wh",
+            "Battery duration": "Up to 13.6 Hours of Video Playback",
+            "Screen-to-body Ratio": "90%"
+          },
+          "price": "1699.99",
+          "vendor": {userId},
+          "category": {categoryId},
+          "available": true,
+          "quantity": 6,
+          "rating": 5.0,
+          "total_reviews": 4
+    	},
+    ]
+
+    ```
+
+    <aside>
+    💡 Thanks to the `specifications` field, specific features can be added to different types of products without having to define them as specific fields in the product table.
+
+    </aside>
+
+    POST Request:
+
+    ```bash
+    curl -X POST localhost:8000/api/products \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}" \
+       -d '{"name": "Headset Razer Kraken Ultimate", "brand": "Razer", "description": "Headset description", "specifications": null, "price": "129.99", "category": {categoryId}, "available": true, "quantity": 10}'
+    ```
+
+    <aside>
+    💡 This post request creates an entry in the inventory_item for the created product and its quantity. In addition, the user that makes the request will be selected as the vendor of the product.
+
+    </aside>
+
+    POST Response (status code 201):
+
+    ```json
+    {
+      "id": {productId},
+      "name": "Headset Razer Kraken Ultimate",
+      "brand": "Razer",
+      "image_url": "",
+      "description": "Headset description",
+      "specifications": null,
+      "price": "129.99",
+      "vendor": {userId},
+      "category": {categoryId},
+      "available": true,
+      "quantity": 10,
+      "rating": null,
+      "total_reviews": 0
+    }
+    ```
+
+
+## Products/{productId}
+
+- **Description**:  Allows the retrieval, edition, and deletion of a product.
+- **HTTP Methods**: GET, PATCH, DELETE
+- **URL**: localhost:8000/api/products/{productId}
+- **********************Permissions**********************: PATCH and DELETE requests on a product can only be made by their vendors.
+- **Example**:
+
+    GET Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/products/{productId} \
+       -H "Content-Type: application/json" \
+    ```
+
+    GET Response (status code 200):
+
+    ```json
+    {
+      "id": {productId},
+      "name": "Cobalt (Walnut/Blue)",
+      "brand": "Holzkern",
+      "image_url": {imageURL},
+      "description": "Cobalt is a naturally occurring element that can be found in the ground, the air and also in the bodies of living creatures. Its bonding properties have been used for the coloration of glass and ceramics since antiquity.",
+      "specifications": {
+        "color": "Walnut/Gray",
+        "movement": "quartz",
+        "release date": "2023-04-10",
+        "case material": "metal-wood",
+        "diameter (mm)": 42,
+        "is waterproof": true,
+        "bracelet material": "metal-wood",
+        "has date indicator": false,
+        "has chronograph features": false
+      },
+      "price": "499.00",
+      "vendor": {userId},
+      "category": {categoryId},
+      "available": true,
+      "quantity": 7,
+      "rating": null,
+      "total_reviews": 0
+    }
+    ```
+
+    PATCH Request:
+
+    ```bash
+    curl -X PATCH localhost:8000/api/products/{productId} \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}" \
+       -d '{"image_url": {imageURL}, "quantity": 100}'
+    ```
+
+    PATCH Response (status code 200):
+
+    ```json
+    {
+      "id": {productId},
+      "name": "Headset Razer Kraken Ultimate",
+      "brand": "Razer",
+      "image_url": {imageURL},
+      "description": "Headset description",
+      "specifications": null,
+      "price": "129.99",
+      "vendor": {userId},
+      "category": {categoryId},
+      "available": true,
+      "quantity": 100,
+      "rating": null,
+      "total_reviews": 0
+    }
+    ```
+
+    DELETE Request:
+
+    ```bash
+    curl -X DELETE localhost:8000/api/products/{productId} \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
+    ```
+
+    <aside>
+    💡 In order to avoid breaking relationships with the product in the database, this request only sets the product as unavailable. The same result can be achieved using a PATCH request and setting the `available` field to `false`.
+
+    </aside>
+
+    DELETE Response (status code 200):
+
+    ```json
+    {
+      "id": {productId},
+      "name": "Headset Razer Kraken Ultimate",
+      "brand": "Razer",
+      "image_url": {imageURL},
+      "description": "Headset description",
+      "specifications": null,
+      "price": "129.99",
+      "vendor": {userId},
+      "category": {categoryId},
+      "available": false,
+      "quantity": 100,
+      "rating": null,
+      "total_reviews": 0
+    }
+    ```
+
+
+## Categories
+
+- **Description**:  Allows the retrieval of the category list as well as the creation of new ones.
+- **HTTP Methods**: GET, POST
+- **URL**: localhost:8000/api/categories
+- **Permissions**: Non-admin are not allowed to make POST requests.
+- **Example**:
+
+    GET Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/categories \
+       -H "Content-Type: application/json" \
+    ```
+
+    GET Response (status code 200):
+
+    ```json
+    [
+      {
+        "id": {categoryId},
+        "name": "Gaming Accessories",
+        "description": "Accessories about gaming, such as headsets, keyboards..."
+      },
+      {
+        "id": {categoryId},
+        "name": "classic Watches",
+        "description": "Beautiful and stylish watches for modern women and men"
+      }
+    ]
+    ```
+
+    POST Request:
+
+    ```bash
+    curl -X POST localhost:8000/api/categories \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}" \
+       -d '{"name": "Gaming Accessories", "description": "Accessories about gaming, such as headsets, keyboards..."}'
+    ```
+
+    POST Response (status code 201):
+
+    ```json
+    {
+      "id": {categoryId},
+      "name": "Gaming Accessories",
+      "description": "Accessories about gaming, such as headsets, keyboards..."
+    }
+    ```
+
+
+## Categories/{categoryId}
+
+- **Description**:  Allows the retrieval, edition, and deletion of a category.
+- **HTTP Methods**: GET, PATCH
+- **URL**: localhost:8000/api/categories/{categoryId}
+- ************************Permissions************************: Non-admins are not allowed to make PATCH and DELETE requests.
+- **Example**:
+
+    GET Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/categories/{categoryId} \
+       -H "Content-Type: application/json" \
+    ```
+
+    GET Response (status code 200):
+
+    ```json
+    {
+      "id": {categoryId},
+      "name": "Classic Women's Watches",
+      "description": "Timeless watches for the modern woman"
+    }
+    ```
+
+    PATCH Request:
+
+    ```bash
+    curl -X PATCH localhost:8000/api/categories/{categoryId} \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}" \
+       -d '{"name": "Classic Women's Timepieces"}'
+    ```
+
+    PATCH Response (status code 200):
+
+    ```json
+    {
+      "id": {categoryId},
+      "name": "Classic Women's Timepieces",
+      "description": "Timeless watches for the modern woman"
+    }
+    ```
+
+
+## Inventory-items
+
+- **Description**:  Allows the retrieval of the inventory items list. This endpoint is meant to be used by admins and vendors.
+- **HTTP Methods**: GET
+- **URL**: localhost:8000/api/inventory-items
+- **Restriction**: Vendors can only retrieve the inventory items for their own products.
+- **Example**:
+
+    GET Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/inventory-items \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
+    ```
+
+    GET Response (status code 200):
+
+    ```json
+    [
+      {
+        "id": {inventoryItemId},
+        "product": {productId},
+        "quantity": 10
+      },
+      {
+        "id": {inventoryItemId},
+        "product": {productId},
+        "quantity": 5
+      }
+    ]
+    ```
+
+
+## Inventory-items/{inventoryItemId}
+
+- **Description**:  Allows the retrieval of the inventory item list. This endpoint is meant to be used by admins and vendors.
+- **HTTP Methods**: GET, PATCH
+- **URL**: localhost:8000/api/inventory-items
+- **Restriction**: Vendors can only retrieve the inventory items for their own products.
+- **Example**:
+
+    GET Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/inventory-items/{inventoryItemId} \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
+    ```
+
+    GET Response (status code 200):
+
+    ```json
+    {
+      "id": {inventoryItemId},
+      "product": {productId},
+      "quantity": 10
+    }
+    ```
+
+    PATCH Request:
+
+    ```bash
+    curl -X PATCH localhost:8000/api/inventory-items/{inventoryItemId} \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}" \
+       -d '{"quantity": 25}'
+    ```
+
+    PATCH Response (status code 200):
+
+    ```json
+    {
+      "id": {inventoryItemId},
+      "product": {productId},
+      "quantity": 25
+    }
+    ```
+
+
+## Cart
+
+- **Description**:  Retrieves user’s shopping cart data.
+- **HTTP Methods**: GET
+- **URL**: localhost:8000/api/cart
+- **Restriction**: Users can only see their own shopping carts.
+- **Example**:
+
+    GET Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/cart \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
+    ```
+
+    GET Response (status code 200):
+
+    ```json
+    {
+      "id": {cartId},
+      "user": {userId},
+      "cart_items": [
+        {cartItemId},
+        {cartItemId},
+        {cartItemId}
+      ],
+      "total": 1497.0,
+      "updated_on": "2023-05-17T18:27:15.028959Z"
+    }
+    ```
+
+
+## Cart/items
+
+- **Description**:  Allows the retrieval of the list of items as well as the addition of new ones in/to the user’s shopping cart.
+- **HTTP Methods**: GET, POST
+- **URL**: localhost:8000/api/cart/items
+    - **Restriction**: Users can only access their own cart items.
+- **Example**:
+
+    GET Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/cart/items \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
+    ```
+
+    GET Response (status code 200):
+
+    ```json
+    [
+      {
+        "id": {cartItemId},
+        "cart": {cartId},
+        "product": {productId},
+        "quantity": 1,
+        "sub_total": 499.0,
+        "product_name": "Carbon (Gray Maple/Dark Gray)",
+        "product_image": "/media/products/carbon_graymaple_darkgray.png",
+        "product_brand": "Holzkern",
+        "product_price": 499.0,
+        "product_vendor": {userId},
+        "product_available": true,
+        "added_on": "2023-05-07T10:29:43.376720Z",
+        "updated_on": "2023-05-07T10:29:43.376720Z"
+      },
+      {
+        "id": {cartItemId},
+        "cart": {cartId},
+        "product": {productId},
+        "quantity": 1,
+        "sub_total": 499.0,
+        "product_name": "Cobalt (Walnut/Blue)",
+        "product_image": "/media/products/cobal_walnut_blue.jpg",
+        "product_brand": "Holzkern",
+        "product_price": 499.0,
+        "product_vendor": {userId},
+        "product_available": true,
+        "added_on": "2023-05-12T10:37:29.555991Z",
+        "updated_on": "2023-05-12T10:37:29.555991Z"
+      },
+      {
+        "id": {cartItemId},
+        "cart": {cartId},
+        "product": {productId},
+        "quantity": 1,
+        "sub_total": 499.0,
+        "product_name": "Argon (Leadwood/Silver)",
+        "product_image": "/media/products/argon_leadwood_silver.png",
+        "product_brand": "Holzkern",
+        "product_price": 499.0,
+        "product_vendor": {userId},
+        "product_available": true,
+        "added_on": "2023-05-17T18:27:15.028959Z",
+        "updated_on": "2023-05-17T18:27:15.028959Z"
+      }
+    ]
+    ```
+
+    POST Request:
+
+    ```bash
+    curl -X POST localhost:8000/api/cart/items \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}" \
+       -d '{"product": {productId}, "quantity": 1}'
+    ```
+
+    POST Response (status code 201):
+
+    ```json
+    {
+      "id": {cartItemId},
+      "cart": {cartId},
+      "product": {productId},
+      "quantity": 1,
+      "sub_total": 1699.99,
+      "product_name": "ASUS TUF Gaming A16 Advantage Edition (2023)",
+      "product_image": "/media/products/A16_bg_kv_w8a7jPc.webp",
+      "product_brand": "ASUS",
+      "product_price": 1699.99,
+      "product_vendor": {userId},
+      "product_available": true,
+      "added_on": "2023-05-22T15:07:59.863847Z",
+      "updated_on": "2023-05-22T15:07:59.863858Z"
+    }
+    ```
+
+
+## Cart/items/{cartItemId}
+
+- **Description**:  Allows the retrieval, edition, and deletion of a cart item on the user’s shopping cart.
+- **HTTP Methods**: GET, PATCH, DELETE
+- **URL**: localhost:8000/api/cart/items/{cartItemId}
+- **Restriction**: Users can only access their own cart items.
+- **Example**:
+
+    GET Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/cart/items/{cartItemId} \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
+    ```
+
+    GET Response (status code 200):
+
+    ```json
+    {
+      "id": {cartItemId},
+      "cart": {cartId},
+      "product": {productId},
+      "quantity": 1,
+      "sub_total": 1699.99,
+      "product_name": "ASUS TUF Gaming A16 Advantage Edition (2023)",
+      "product_image": "/media/products/A16_bg_kv_w8a7jPc.webp",
+      "product_brand": "ASUS",
+      "product_price": 1699.99,
+      "product_vendor": {userId},
+      "product_available": true,
+      "added_on": "2023-05-22T15:15:18.355912Z",
+      "updated_on": "2023-05-22T15:15:18.355919Z"
+    }
+    ```
+
+    PATCH Request:
+
+    ```bash
+    curl -X PATCH localhost:8000/api/cart/items/{cartItemId} \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}" \
+       -d '{"quantity": 2}'
+    ```
+
+    PATCH Response (status code 200):
+
+    ```json
+    {
+      "id": {cartItemId},
+      "cart": {cartId},
+      "product": {productId},
+      "quantity": 2,
+      "sub_total": 3399.98,
+      "product_name": "ASUS TUF Gaming A16 Advantage Edition (2023)",
+      "product_image": "/media/products/A16_bg_kv_w8a7jPc.webp",
+      "product_brand": "ASUS",
+      "product_price": 1699.99,
+      "product_vendor": {userId},
+      "product_available": true,
+      "added_on": "2023-05-22T15:07:59.863847Z",
+      "updated_on": "2023-05-22T16:08:58.863858Z"
+    }
+    ```
+
+    DELETE Request:
+
+    ```bash
+    curl -X DELETE localhost:8000/api/cart/items/{cartItemId} \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
+    ```
+
+    DELETE Response (status code 204):
+
+    ```json
+    []
+    ```
+
+
+## Orders
+
+- **Description**:  Retrieves the user’s order list and creates new ones.
+- **HTTP Methods**: GET, POST
+- **URL**: localhost:8000/api/orders
+- **Restriction**: Users can only access to their own orders.
+- **Example**:
+
+    GET Request:
+
+    ```bash
+    curl -X GET localhost:8000/api/user/orders \
+       -H "Content-Type: application/json" \
+       -H "Authorization: Bearer {access_token}"
+    ```
+
+    GET Response (status code 200):
+
+    ```json
+    [
+      {
+        "id": {orderId},
+        "user": {userId},
+        "order_items": [
+          {orderItemId},
+          {orderItemId},
+          {orderItemId}
+        ],
+        "total": 3038.98,
+        "created_on": "2023-05-06T17:41:01.668524Z",
+        "updated_on": "2023-05-06T17:41:01.668534Z"
+      },
+      {
+        "id": {orderId},
+        "user": {userId},
+        "order_items": [
+          {orderItemId},
+          {orderItemId}
+        ],
+        "total": 2697.99,
+        "created_on": "2023-05-07T21:04:03.068404Z",
+        "updated_on": "2023-05-07T21:04:03.068426Z"
+      }
+    ]
+    ```
+
+    <aside>
+    💡 Documentation for some of the endpoints is still missing. Such documentation will be added in the following days.
+
+    </aside>
