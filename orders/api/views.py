@@ -13,8 +13,6 @@ from orders.api.serializers import OrderSerializer, OrderItemSerializer
 
 from carts.models import Cart
 
-from .utils import is_integer
-
 
 class OrderListMixin:
 
@@ -59,12 +57,15 @@ class OrderListMixin:
         cart.updated_on = timezone.now()
         cart.save()
 
-
 class OrderListView(OrderListMixin, ListAPIView):
     model = Order
     queryset = model.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(user=self.request.user)
+        return queryset
 
     def post(self, request, *args, **kwargs):
         serializer = OrderSerializer(data=request.data,
@@ -86,19 +87,16 @@ class OrderListView(OrderListMixin, ListAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        if len(self.request.query_params) == 0:
-            queryset = queryset.none()
-        if self.request.query_params.get('user') == 'current':
-            queryset = queryset.filter(user=self.request.user)
-        return queryset
-
 
 class OrderSingleView(RetrieveAPIView):
     model = Order
     queryset = model.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(user=self.request.user)
+        return queryset
 
 
 class OrderItemListView(ListAPIView):
@@ -108,13 +106,9 @@ class OrderItemListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        order = self.request.query_params.get('order')
-        if order is not None:
-            if is_integer(order):
-                queryset = queryset.filter(order=order)
-            else:
-                queryset = queryset.none()
+        queryset = super().get_queryset().filter(
+            order__user=self.request.user
+        )
         return queryset
 
 
@@ -122,3 +116,10 @@ class OrderItemSingleView(RetrieveAPIView):
     model = OrderItem
     queryset = model.objects.all()
     serializer_class = OrderItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(
+            order__user=self.request.user
+        )
+        return queryset
