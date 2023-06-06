@@ -1107,7 +1107,7 @@ This documentation describes the usage and functionality of the endpoints expose
     GET Request:
 
     ```bash
-    curl -X GET localhost:8000/api/user/orders \
+    curl -X GET localhost:8000/api/orders \
        -H "Content-Type: application/json" \
        -H "Authorization: Bearer {access_token}"
     ```
