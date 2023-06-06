@@ -6,38 +6,61 @@ from rest_framework.generics import (
 )
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser,
+)
 
 from carts.models import Cart, CartItem
 from carts.api.serializers import CartSerializer, CartItemSerializer
-
-
-class UserCartView(RetrieveAPIView):
-    model = Cart
-    queryset = model.objects.all()
-    serializer_class = CartSerializer
-
-    def get_object(self):
-        return Cart.objects.get(user=self.request.user)
 
 
 class CartListView(ListAPIView):
     model = Cart
     queryset = model.objects.all()
     serializer_class = CartSerializer
+    permission_classes = [IsAdminUser]
 
 
 class CartSingleView(RetrieveAPIView):
     model = Cart
     queryset = model.objects.all()
     serializer_class = CartSerializer
+    permission_classes = [IsAdminUser]
 
 
-class CartItemListView(ListCreateAPIView):
+class CartItemListView(ListAPIView):
+    model = CartItem
+    queryset = model.objects.all()
+    serializer_class = CartItemSerializer
+    permission_classes = [IsAdminUser]
+
+
+class CartItemSingleView(RetrieveUpdateDestroyAPIView):
+    model = CartItem
+    queryset = model.objects.all()
+    serializer_class = CartItemSerializer
+
+
+class UserCartView(RetrieveAPIView):
+    model = Cart
+    queryset = model.objects.all()
+    serializer_class = CartSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return Cart.objects.get(user=self.request.user)
+
+
+class UserCartItemListView(ListCreateAPIView):
     model = CartItem
     queryset = model.objects.all()
     serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        cart = Cart.objects.get(user=self.request.user)
+        return CartItem.objects.filter(cart=cart)
 
     def post(self, request, *args, **kwargs):
         serializer = CartItemSerializer(data=request.data,
@@ -64,12 +87,13 @@ class CartItemListView(ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_queryset(self):
-        cart = Cart.objects.get(user=self.request.user)
-        return CartItem.objects.filter(cart=cart)
 
-
-class CartItemSingleView(RetrieveUpdateDestroyAPIView):
+class UserCartItemSingleView(RetrieveUpdateDestroyAPIView):
     model = CartItem
     queryset = model.objects.all()
     serializer_class = CartItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        cart = Cart.objects.get(user=self.request.user)
+        return CartItem.objects.get(cart=cart, pk=self.kwargs['pk'])
