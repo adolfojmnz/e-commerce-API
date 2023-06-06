@@ -109,7 +109,8 @@ class UserDetailView(UserViewMixin, RetrieveUpdateDestroyAPIView):
         user.is_active = False
         user.save()
         return Response(
-            status=status.HTTP_204_NO_CONTENT,
+            {'message': 'The user has been set as inactive.'},
+            status=status.HTTP_200_OK,
         )
 
 
