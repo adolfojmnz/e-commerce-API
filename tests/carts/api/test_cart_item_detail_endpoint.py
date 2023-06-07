@@ -45,7 +45,8 @@ class SetUpTestCase(TestCase):
     def setUp(self):
         self.create_related_objects()
         self.authenticate()
-        self.url = reverse('cart-item-detail', kwargs={'pk': self.cart_item.pk})
+        self.url = reverse('user-cart-item-detail',
+                           kwargs={'pk': self.cart_item.pk})
 
 
 class TestCartItemDetailEndpoint(SetUpTestCase):

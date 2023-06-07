@@ -39,7 +39,7 @@ class SetUpTestCase(TestCase):
     def setUp(self):
         self.create_related_objects()
         self.authenticate()
-        self.url = reverse('cart-items')
+        self.url = reverse('user-cart-items')
 
 
 class TestCartItemListEndpoint(SetUpTestCase):
