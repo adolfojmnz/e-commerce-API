@@ -3,6 +3,10 @@ from rest_framework.generics import (
 )
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.permissions import (
+    SAFE_METHODS,
+    IsAdminUser,
+)
 
 from products.models import Product
 from products.api.serializers import ProductSerializer
@@ -10,10 +14,19 @@ from products.api.serializers import ProductSerializer
 from inventory.models import InventoryItem
 
 
-class ProductListView(ListCreateAPIView):
+class PermissionMixin:
+
+    def get_permissions(self):
+        if not self.request.method in SAFE_METHODS:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
+
+
+class ProductListView(PermissionMixin, ListCreateAPIView):
     model = Product
     queryset = model.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = []
 
     def post(self, request, *args, **kwargs):
         serializer = ProductSerializer(data=request.data,
@@ -37,7 +50,8 @@ class ProductListView(ListCreateAPIView):
         return super().get_queryset()
 
 
-class ProductSingleView(RetrieveUpdateDestroyAPIView):
+class ProductSingleView(PermissionMixin, RetrieveUpdateDestroyAPIView):
     model = Product
     queryset = model.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = []
