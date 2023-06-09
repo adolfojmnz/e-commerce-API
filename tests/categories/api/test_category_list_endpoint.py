@@ -7,19 +7,27 @@ from rest_framework.test import APIClient
 from categories.models import Category
 from categories.api.serializers import CategorySerializer
 
-from tests.helpers import CategoriesTestHelpers
+from tests.helpers import (
+    AccountsTestHelpers,
+    CategoriesTestHelpers,
+)
 from tests.data import category_single as category_data
 
 
 class SetUpTestCase(TestCase):
 
-    def setUp(self):
+    def authenticate(self):
         self.client = APIClient()
+        self.vendor = AccountsTestHelpers().create_vendor()
+        self.client.force_authenticate(user=self.vendor)
+
+    def setUp(self):
+        self.authenticate()
         self.url = reverse('categories')
         return super().setUp()
 
 
-class InventoryItemListEndppointTestCase(SetUpTestCase):
+class CategoryListEndpointTestCase(SetUpTestCase):
 
     def test_get(self):
         CategoriesTestHelpers().create_category()

@@ -17,6 +17,10 @@ from tests.helpers import (
 
 class SetUpTestCase(TestCase):
 
+    def authenticate(self):
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.vendor)
+
     def create_related_objects(self):
         self.vendor = AccountsTestHelpers().create_vendor()
         category = CategoriesTestHelpers().create_category()
@@ -29,13 +33,13 @@ class SetUpTestCase(TestCase):
 
     def setUp(self):
         self.create_related_objects()
+        self.authenticate()
         self.url = reverse(
             'inventory-item-detail', kwargs={'pk': self.inventory_item.pk}
         )
-        self.client = APIClient()
 
 
-class InventoryItemDetailEndppointTestCase(SetUpTestCase):
+class InventoryItemDetailEndpointTestCase(SetUpTestCase):
 
     def test_get(self):
         response = self.client.get(self.url)

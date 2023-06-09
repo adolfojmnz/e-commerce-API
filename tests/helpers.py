@@ -17,18 +17,21 @@ class AccountsTestHelpers:
     vendor_data = data.vendor_single
     user_list_data = data.user_list
 
-    def create_user(self, user_data=None):
+    def create_user(self, user_data=None, is_admin=False):
         user_data = user_data or self.user_data
-        user = User.objects.create_user(**user_data)
+        user = User.objects.create_user(
+            **user_data,
+            is_staff=is_admin,
+        )
         return user
 
     def create_customer(self, customer_data=None):
         customer_data = customer_data or self.customer_data
         return self.create_user(customer_data)
 
-    def create_vendor(self, vendor_data=None):
+    def create_vendor(self, vendor_data=None, is_admin=True):
         vendor_data = vendor_data or self.vendor_data
-        return self.create_user(vendor_data)
+        return self.create_user(vendor_data, is_admin)
 
     def create_user_list(self, user_list_data=None):
         user_list_data = user_list_data or self.user_list_data
