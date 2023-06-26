@@ -57,6 +57,7 @@ class OrderListMixin:
         cart.updated_on = timezone.now()
         cart.save()
 
+
 class OrderListView(OrderListMixin, ListAPIView):
     model = Order
     queryset = model.objects.all()
@@ -109,6 +110,10 @@ class OrderItemListView(ListAPIView):
         queryset = super().get_queryset().filter(
             order__user=self.request.user
         )
+        if self.request.query_params.get('order'):
+            queryset = queryset.filter(
+                order__pk=self.request.query_params.get('order')
+            )
         return queryset
 
 
