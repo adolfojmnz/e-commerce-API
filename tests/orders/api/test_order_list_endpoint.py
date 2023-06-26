@@ -51,7 +51,7 @@ class TestOrderListEndpoint(SetUpTestCase):
 
     def test_get(self):
         OrdersTestHelpers().create_order(user=self.customer)
-        response = self.client.get(f'{self.url}?user=current')
+        response = self.client.get(self.url)
         serializer = OrderSerializer(
             Order.objects.filter(user=self.customer),
             many=True,

@@ -48,7 +48,7 @@ class SetUpTestCase(TestCase):
     def setUp(self):
         self.create_related_objects()
         self.authenticate()
-        self.url = f"{reverse('order-items')}?user=current"
+        self.url = reverse('order-items')
         return super().setUp()
 
 
