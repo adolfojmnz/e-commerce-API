@@ -40,9 +40,10 @@ class CartItemSingleView(RetrieveUpdateDestroyAPIView):
     model = CartItem
     queryset = model.objects.all()
     serializer_class = CartItemSerializer
+    permission_classes = [IsAdminUser]
 
 
-class UserCartView(RetrieveAPIView):
+class CustomerCartView(RetrieveAPIView):
     model = Cart
     queryset = model.objects.all()
     serializer_class = CartSerializer
@@ -52,7 +53,7 @@ class UserCartView(RetrieveAPIView):
         return Cart.objects.get(user=self.request.user)
 
 
-class UserCartItemListView(ListCreateAPIView):
+class CustomerCartItemListView(ListCreateAPIView):
     model = CartItem
     queryset = model.objects.all()
     serializer_class = CartItemSerializer
@@ -88,7 +89,7 @@ class UserCartItemListView(ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserCartItemSingleView(RetrieveUpdateDestroyAPIView):
+class CustomerCartItemSingleView(RetrieveUpdateDestroyAPIView):
     model = CartItem
     queryset = model.objects.all()
     serializer_class = CartItemSerializer

@@ -1,6 +1,3 @@
-from json import dumps
-
-from django.utils import timezone
 from django.test import TestCase
 from django.urls import reverse
 
@@ -35,49 +32,42 @@ class SetUpTestCase(TestCase):
             vendor=vendor, category=category
         )
         InventoryTestHelpers().create_inventory_item(
-            product=self.product, quantity=20
+            product=self.product, quantity=10
         )
         self.cart = CartTestHelpers().create_cart(user=self.customer)
-        self.cart_item = CartTestHelpers().create_cart_item(
-            cart=self.cart, product=self.product, quantity=10
-        )
 
     def setUp(self):
         self.create_related_objects()
         self.authenticate()
-        self.url = reverse('user-cart-item-detail',
-                           kwargs={'pk': self.cart_item.pk})
+        self.url = reverse('customer-cart-items')
 
 
-class TestCartItemDetailEndpoint(SetUpTestCase):
+class TestCartItemListEndpoint(SetUpTestCase):
 
     def test_get(self):
+        CartTestHelpers().create_cart_item(
+            cart=self.cart, product=self.product, quantity=10
+        )
         response = self.client.get(self.url)
         serializer = CartItemSerializer(
-            CartItem.objects.get(pk=self.cart_item.pk),
+            CartItem.objects.all(),
+            many=True,
             context={'request': self.request},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(CartItem.objects.count(), 1)
 
-    def test_patch(self):
+    def test_post(self):
         data = {
-            'quantity': 20,
-            'updated_on': timezone.now().__str__(),
+            'product_id': self.product.pk,
+            'quantity': 10,
         }
-        response = self.client.patch(self.url,
-                                     dumps(data),
-                                     content_type='application/json')
+        response = self.client.post(self.url, data)
         serializer = CartItemSerializer(
-            CartItem.objects.get(pk=self.cart_item.pk),
+            CartItem.objects.get(pk=response.data['id']),
             context={'request': self.request},
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, serializer.data)
-
-    def test_delete(self):
-        response = self.client.delete(self.url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(response.data, None)
-        self.assertEqual(CartItem.objects.count(), 0)
+        self.assertEqual(CartItem.objects.count(), 1)

@@ -24,7 +24,7 @@ class SetUpTestCase(TestCase):
     def setUp(self):
         self.customer = AccountsTestHelpers().create_customer()
         self.cart = CartTestHelpers().create_cart(user=self.customer)
-        self.url = reverse('user-cart')
+        self.url = reverse('customer-cart')
         self.authenticate()
         return super().setUp()
 
