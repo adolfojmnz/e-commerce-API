@@ -11,7 +11,7 @@ from products.models import Product
 class OrderSerializer(serializers.ModelSerializer):
 
     user = serializers.HyperlinkedRelatedField(
-        view_name='user-detail',
+        view_name='customer-detail',
         read_only=True,
     )
     order_items = serializers.SerializerMethodField()

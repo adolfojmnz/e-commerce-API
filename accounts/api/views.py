@@ -6,7 +6,11 @@ from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser,
+    SAFE_METHODS,
+)
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -15,6 +19,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from accounts.models import User
+from utils.permissions import IsSuperUser
 from accounts.api.serializers import UserSerializer
 
 from carts.models import Cart
@@ -75,7 +80,7 @@ class UserViewMixin:
             )
 
 
-class UserListView(UserViewMixin, ListCreateAPIView):
+class UserListViewMixin(UserViewMixin, ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         return self.handle_request_on_valid_password(
@@ -86,7 +91,7 @@ class UserListView(UserViewMixin, ListCreateAPIView):
         )
 
 
-class UserDetailView(UserViewMixin, RetrieveUpdateDestroyAPIView):
+class UserDetailViewMixin(UserViewMixin, RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
         return self.handle_request_on_valid_password(
@@ -114,7 +119,55 @@ class UserDetailView(UserViewMixin, RetrieveUpdateDestroyAPIView):
         )
 
 
-class CurrentUserView(UserDetailView):
+class CustomerListView(UserListViewMixin):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            is_staff=False,
+            is_superuser=False,
+            is_active=True,
+        )
+
+
+class CustomerDetailView(UserDetailViewMixin):
+
+    def get_permissions(self):
+        if self.request.user == User.objects.get(pk=self.kwargs['pk']):
+            self.permission_classes = [IsAuthenticated]
+        elif not self.request.method in SAFE_METHODS:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            is_staff=False,
+            is_superuser=False,
+            is_active=True,
+        )
+
+
+class AdminListView(UserListViewMixin):
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        return self.queryset.filter(is_staff=True)
+
+
+class AdminDetailView(UserDetailViewMixin):
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.user == User.objects.get(pk=self.kwargs['pk']):
+            self.permission_classes = [IsAdminUser]
+        elif not self.request.method in SAFE_METHODS:
+            self.permission_classes = [IsSuperUser]
+        return super().get_permissions()
+
+    def get_queryset(self):
+        return self.queryset.filter(is_staff=True)
+
+
+class CurrentUserView(UserDetailViewMixin):
     permission_classes = [IsAuthenticated]
 
     def get_object(self):

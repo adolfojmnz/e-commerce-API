@@ -12,7 +12,7 @@ from accounts.models import User
 class CartSerializer(serializers.ModelSerializer):
 
     user = serializers.HyperlinkedRelatedField(
-        view_name='user-detail',
+        view_name='customer-detail',
         queryset=User.objects.all(),
     )
     cart_items = serializers.SerializerMethodField()

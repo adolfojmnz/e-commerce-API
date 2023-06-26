@@ -11,17 +11,18 @@ from tests.data import user_single as user_data
 
 
 
-class SetUpMixin(TestCase):
+class SetUpTestCase(TestCase):
 
     def setUp(self) -> None:
         self.client = Client()
+        self.url = reverse('customers')
         return super().setUp()
 
 
-class TestUsers(SetUpMixin):
+class TestCustomerListEndpoint(SetUpTestCase):
 
     def test_post(self):
-        response = self.client.post(reverse('users'), data=user_data)
+        response = self.client.post(self.url, data=user_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         db_user = User.objects.get(username=user_data['username'])
         serializer = UserSerializer(db_user)
@@ -31,7 +32,7 @@ class TestUsers(SetUpMixin):
 
     def test_get(self):
         AccountsTestHelpers().create_user_list()
-        response = self.client.get(reverse('users'))
+        response = self.client.get(self.url)
         serializer = UserSerializer(User.objects.all(), many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)

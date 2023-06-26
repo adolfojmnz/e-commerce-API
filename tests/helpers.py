@@ -15,13 +15,16 @@ class AccountsTestHelpers:
     user_data = data.user_single
     customer_data = data.customer_single
     vendor_data = data.vendor_single
+    admin_data = data.admin_single
+    superuser_data = data.superuser_single
     user_list_data = data.user_list
 
-    def create_user(self, user_data=None, is_admin=False):
+    def create_user(self, user_data=None, is_admin=False, is_superuser=False):
         user_data = user_data or self.user_data
         user = User.objects.create_user(
             **user_data,
             is_staff=is_admin,
+            is_superuser=is_superuser,
         )
         return user
 
@@ -33,10 +36,20 @@ class AccountsTestHelpers:
         vendor_data = vendor_data or self.vendor_data
         return self.create_user(vendor_data, is_admin)
 
-    def create_user_list(self, user_list_data=None):
+    def create_admin(self, superuser_data=None):
+        superuser_data = superuser_data or self.admin_data
+        return self.create_user(superuser_data, is_admin=True)
+
+    def create_superuser(self, superuser_data=None):
+        superuser_data = superuser_data or self.superuser_data
+        return self.create_user(superuser_data, is_admin=True, is_superuser=True)
+
+    def create_user_list(self, user_list_data=None, is_admin=False,
+                                                    is_superuser=False):
         user_list_data = user_list_data or self.user_list_data
         users = User.objects.bulk_create([
-            User(**user_data) for user_data in user_list_data
+            User(**user_data, is_staff=is_admin, is_superuser=is_superuser)
+            for user_data in user_list_data
         ])
         return users
 

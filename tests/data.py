@@ -55,6 +55,18 @@ customer_single = {
     "last_login": "2023-04-20T12:39:52Z",
 }
 
+another_customer_single = {
+    "avatar_url": "/media/avatars/johnny.jpg",
+    "username": "johnny",
+    "password": "q!--qQZR8U4,cZXY",
+    "first_name": "johnny",
+    "last_name": "doe",
+    "about": "johnny doe's bio",
+    "email": "johnny@localhost.com",
+    "birthdate": "1992-01-01",
+    "is_active": True,
+}
+
 vendor_single = {
     "avatar_url": "/media/avatars/holzkern.jpga",
     "username": "holzkern",
@@ -63,6 +75,30 @@ vendor_single = {
     "email": "holzkern@localhost.com",
     "is_active": True,
     "birthdate": "1980-02-01",
+}
+
+admin_single = {
+    "avatar_url": "/media/avatars/admin.jpg",
+    "username": "admin",
+    "password": "q!--qQZR8U4,cZXY",
+    "first_name": "admin",
+    "last_name": "doe",
+    "about": "admin doe's bio",
+    "email": "admin@localhost.com",
+    "birthdate": "2000-01-01",
+    "is_active": True,
+}
+
+superuser_single = {
+    "avatar_url": "/media/avatars/superuser.jpg",
+    "username": "superuser",
+    "password": "q!--qQZR8U4,cZXY",
+    "first_name": "superuser",
+    "last_name": "doe",
+    "about": "superuser doe's bio",
+    "email": "superuser@localhost.com",
+    "birthdate": "2000-01-01",
+    "is_active": True,
 }
 
 category_single = {
