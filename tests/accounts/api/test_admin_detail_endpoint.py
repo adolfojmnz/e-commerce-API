@@ -42,8 +42,8 @@ class TestAdminDetailEndpoint(TestCase):
 
     def test_delete(self):
         response = self.client.delete(self.url)
-        serializer = UserSerializer(User.objects.all(), many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(User.objects.get(pk=self.admin.pk).is_active)
 
 
 class TestOtherAdminPermissionOnAdminDetailEndpoint(TestCase):
@@ -101,11 +101,6 @@ class TestSuperuserPermissionOnAdminDetailEndpoint(TestCase):
         self.assertEqual(response.data, serializer.data)
         self.assertTrue(response.data != [])
 
-    def test_superuser_can_delete_admin(self):
-        response = self.client.delete(self.url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(User.objects.get(pk=self.admin.pk).is_active, False)
-
     def test_superuser_can_update_admin(self):
         response = self.client.patch(self.url,
                                      data=dumps({'username': 'username'}),
@@ -114,3 +109,8 @@ class TestSuperuserPermissionOnAdminDetailEndpoint(TestCase):
         self.assertEqual(
             User.objects.get(pk=self.admin.pk).username, 'username'
         )
+
+    def test_superuser_can_delete_admin(self):
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(User.objects.get(pk=self.admin.pk).is_active)

@@ -27,13 +27,14 @@ class TestCustomerListEndpoint(SetUpTestCase):
         db_user = User.objects.get(username=user_data['username'])
         serializer = UserSerializer(db_user)
         self.assertTrue(db_user.cart.all().exists())
-        self.assertEqual(response.data, serializer.data)
         self.assertTrue(response.data != [])
+        self.assertEqual(response.data, serializer.data)
+        self.assertFalse(serializer.data['is_staff'])
 
     def test_get(self):
         AccountsTestHelpers().create_user_list()
         response = self.client.get(self.url)
         serializer = UserSerializer(User.objects.all(), many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, serializer.data)
         self.assertTrue(response.data != [])
+        self.assertEqual(response.data, serializer.data)

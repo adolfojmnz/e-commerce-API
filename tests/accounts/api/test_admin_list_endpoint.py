@@ -44,8 +44,9 @@ class TestAdminListEndpoint(SetUpTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         db_user = User.objects.get(username=user_data['username'])
         serializer = UserSerializer(db_user)
-        self.assertEqual(response.data, serializer.data)
         self.assertTrue(response.data != [])
+        self.assertEqual(response.data, serializer.data)
+        self.assertTrue(serializer.data['is_staff'])
 
     def test_get(self):
         AccountsTestHelpers().create_user_list(is_admin=True)

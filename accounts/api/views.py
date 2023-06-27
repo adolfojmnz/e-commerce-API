@@ -44,9 +44,6 @@ class UserViewMixin:
 
     def perform_create(self, serializer):
         serializer.save()
-        # Assign a Cart to the user
-        cart = Cart.objects.create(user=serializer.instance)
-        cart.save()
 
     def handle_post_request(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
@@ -121,6 +118,11 @@ class UserDetailViewMixin(UserViewMixin, RetrieveUpdateDestroyAPIView):
 
 class CustomerListView(UserListViewMixin):
 
+    def perform_create(self, serializer):
+        serializer.save()
+        cart = Cart.objects.create(user=serializer.instance)
+        cart.save()
+
     def get_queryset(self):
         return super().get_queryset().filter(
             is_staff=False,
@@ -148,6 +150,10 @@ class CustomerDetailView(UserDetailViewMixin):
 
 class AdminListView(UserListViewMixin):
     permission_classes = [IsAdminUser]
+
+    def perform_create(self, serializer):
+        serializer.validated_data['is_staff'] = True
+        serializer.save()
 
     def get_queryset(self):
         return self.queryset.filter(is_staff=True)
@@ -183,4 +189,3 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             user.last_login = timezone.now()
             user.save()
         return response
-
