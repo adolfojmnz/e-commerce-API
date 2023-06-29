@@ -84,3 +84,51 @@ class TestReviewDetailEndpoint(SetUpTestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(response.data, None)
         self.assertEqual(Review.objects.count(), 0)
+
+
+class TestReviewListConstraints(SetUpTestCase):
+
+    def create_related_objects(self):
+        super().create_related_objects()
+        self.another_customer = AccountsTestHelpers().create_user()
+
+    def authenticate(self):
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.another_customer)
+        self.request = Request(APIRequestFactory().get('/'))
+
+    def setUp(self):
+        return super().setUp()
+
+    def test_another_customer_can_retrieve_review(self):
+        """ Test that a customer can retrieve reviews
+            from other customers. """
+        response = self.client.get(self.url)
+        serializer = ReviewSerializer(
+            self.review,
+            context={'request': self.request},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
+        self.assertTrue(response.data != [])
+
+    def test_another_customer_cannot_patch_review(self):
+        """ Test that a customer cannot patch a review
+            whose ownership does not belongs to him. """
+        response = self.client.patch(self.url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_another_customer_cannot_update_review(self):
+        """ Test that a customer cannot update a review
+            whose ownership does not belongs to him. """
+        response = self.client.put(self.url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_another_customer_cannot_delete_review(self):
+        """ Test that a customer cannot delete a review
+            whose ownership does not belongs to him. """
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['message'],
+                        'You cannot review a product you did not order')
+

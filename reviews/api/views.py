@@ -1,7 +1,12 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import (
-    ListCreateAPIView, RetrieveUpdateDestroyAPIView
+    ListAPIView, RetrieveUpdateDestroyAPIView
+)
+from rest_framework.permissions import (
+    IsAdminUser,
+    IsAuthenticated,
+    SAFE_METHODS,
 )
 
 from orders.models import Order
@@ -35,10 +40,11 @@ class ReviewListMixin:
             return False
 
 
-class ReviewListView(ReviewListMixin, ListCreateAPIView):
+class ReviewListView(ReviewListMixin, ListAPIView):
     model = Review
     queryset = model.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         if not self.user_can_review(request.user,
@@ -71,3 +77,23 @@ class ReviewSingleView(RetrieveUpdateDestroyAPIView):
     model = Review
     queryset = model.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def requesting_user_owns_review(self):
+        """ Returns True if the requesting user owns the
+            requested review, False otherwise or if the
+            requested review does not exist. """
+        try:
+            return Review.objects.get(
+                pk=self.request.parser_context['kwargs']['pk']
+            ).user == self.request.user
+        except Review.DoesNotExist:
+            return False
+
+    def get_permissions(self):
+        if not self.requesting_user_owns_review():
+            self.permission_classes = [IsAdminUser]
+        if self.request.method in SAFE_METHODS:
+            self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
+
