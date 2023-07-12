@@ -6,7 +6,7 @@ This project has been developed with Python using Django and Django Rest Framewo
 It is powered by a PosgreSQL database.
 
 So far, it has a CI workflow defined with GitHub Actions which sets up and tests the
-code committed to this GitHub repo. Subsequently, such CI workflow builds and pushes
+code committed to this GitHub repo, subsequently, it builds and pushes
 a Docker Image to Docker Hub.
 
 This RESTFull API features Jason Web Token authentication and several endpoints with
