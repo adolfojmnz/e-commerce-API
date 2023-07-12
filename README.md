@@ -1,20 +1,34 @@
 # Description
 
-This is a work-in-progress Rest API for an e-commerce app. The technologies being used are Dajngo and Dajngo Rest Framework with a PostgreSQL database.
-The API capabilities allow CRUD operations on the endpoints for users, products, categories, inventory, reviews and more.
+### A RESTFull API for an e-commerce app.
 
-The goal is to create a modern platform where users can buy and sell products, therefore, the API allows:
- - Product Listing
- - Shopping Cart
- - Order Management
- - Products Reviews
- - Q&A In Products (not implemented yet)
- - Private Messages Between Sellers And Customers (not implemented yet)
+This project has been developed with Python using Django and Django Rest Framework.
+It is powered by a PosgreSQL database.
 
-The platform is intended to be structured in a multi-tier architecture deployed on AWS.
+So far, it has a CI workflow defined with GitHub Actions which sets up and tests the
+code committed to this GitHub repo, subsequently, it builds and pushes
+a Docker Image to Docker Hub.
 
-The presentation layer (front-end) es being developed as Netx.js App. <br>
-Repo: [E-Commerce-Next.js](https://github.com/Eadwulf/e-commerce-nextjs)
+This RESTFull API features Jason Web Token authentication and several endpoints with
+defined levels of authorization based on the requesting user's role.
+
+The project's endpoints allow to perform CRUD operations on multiple database models,
+such as:
+ - Products
+ - Inventory
+ - Categories
+ - Shopping Cart and Shopping Cart Items
+ - Orders and Order Items
+ - Reviews
+
+The project is being structured as a three tiers architecture with:
+ - Data Tier: PostgreSQL database
+ - Presentation Tier: Netx.JS Application
+ - Backend Tier: Django Application (This RESTFull API)
+
+
+The presentation tier (front-end) can be found in the
+[E-Commerce-Next.js](https://github.com/Eadwulf/e-commerce-nextjs) repo.
 <br><br>
 
 
@@ -76,13 +90,13 @@ the **Environment Variables** section
 # config/settings.py
 
 DATABASES = {
-    'default': {
-	'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DATABASE_NAME'),
-        'HOST': env('DATABASE_HOST'),
-        'PORT': env('DATABASE_PORT'),
-        'USER': env('DATABASE_USER'),
-        'PASSWORD': env('DATABASE_PASSWORD'),
+  'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': env('POSTGRES_DB'),
+    'HOST': env('POSTGRES_HOST'),
+    'PORT': env('POSTGRES_PORT'),
+    'USER': env('POSTGRES_USER'),
+    'PASSWORD': env('POSTGRES_PASSWORD'),
     },
 }
 ```
@@ -93,7 +107,7 @@ DATABASES = {
 </aside>
 <br>
 
-### Enter The PostgreSQL Prompt
+### Enter Into The PostgreSQL Prompt
 
 ```sql
 psql -U postgres -d postgres
@@ -111,7 +125,7 @@ CREATE DATABASE <database_name>;
 CREATE USER <username> WITH ENCRYPTED PASSWORD '<password>';
 ```
 
-### Modifying Connection Parameters
+### Modifying User's Parameters
 
 ```sql
 ALTER ROLE <database_user> SET client_encoding TO 'utf8';
@@ -140,11 +154,11 @@ In the root directory *(e-commerce-API/)*, create the **.env** file and add to i
 ```python
 DEBUG=<boolean_value>
 SECRET_KEY=<your_django_api_key>
-DATABASE_NAME=<your_database_name>
-DATABASE_HOST=<your_database_host>
-DATABASE_PORT=<your_database_port>
-DATABASE_USER=<your_database_user>
-DATABASE_PASSWORD=<your_database_password>
+POSTGRES_DB=<your_database_name>
+POSTGRES_HOST=<your_database_host>
+POSTGRES_PORT=<your_database_port>
+POSTGRES_USER=<your_database_user>
+POSTGRES_PASSWORD=<your_database_password>
 ```
 <aside>
     💡 Note:
@@ -166,7 +180,7 @@ DATABASE_PASSWORD=<your_database_password>
 
 ### Generate The SECRET_KEY
 
-To run the project, you will need to set a secret key to the `SECRET_KEY` environment variable.
+To run the project, you will need to set a Django secret key to the `SECRET_KEY` environment variable.
 Create one by running
 
 ```console
@@ -193,9 +207,10 @@ It will output a key such as
 </aside>
 <br>
 
+
 # Migrations
 
-Once the database is set up as well as the environment variables, you can proceed to apply the migrations
+Once the database has been set up as well as the environment variables, you can apply the migrations
 
 ```python
 python manage.py migrate
@@ -203,23 +218,25 @@ python manage.py migrate
 
 # Tests
 
-So far, a total of 49 tests are available. Such tests ensure that the models and the API endpoints work as expected.
-<br>
+The project includes more than eighty (80) tests that ensure its correct functioning. The tests
+cover constraints, business logic, permission, and authorization.
+
+All the endpoints and their allowed HTTP methods are tested.
 
 ### Run the tests
 ```console
 python manage.py test
 ```
 
-It should return an output such as
+Example output
 
 ```console
-Found 49 test(s).
+Found 88 test(s).
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
-.................................................
+........................................................................................
 ----------------------------------------------------------------------
-Ran 49 tests in 16.937s
+Ran 88 tests in 54.432s
 
 OK
 Destroying test database for alias 'default'...
@@ -229,7 +246,7 @@ Destroying test database for alias 'default'...
 
 ![Database ERD](./ERD.png)
 
-# Endpoints Documentation
+# API Documentation
 
 ## Introduction
 
