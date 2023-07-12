@@ -4,6 +4,6 @@ django-environ
 django-cors-headers
 djangorestframework
 djangorestframework-simplejwt
-psycopg["binary", "pool"]
+psycopg
 requests
 pillow

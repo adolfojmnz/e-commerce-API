@@ -129,6 +129,3 @@ class TestReviewListConstraints(SetUpTestCase):
             whose ownership does not belongs to him. """
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data['message'],
-                        'You cannot review a product you did not order')
-

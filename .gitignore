@@ -140,6 +140,3 @@ db.sqlite3
 
 # django_extensions
 .notebook
-
-# Hidden files
-.*
