@@ -246,8 +246,7 @@ Destroying test database for alias 'default'...
 
 ![Database ERD](./ERD.png)
 
-# API Documentation
 
-## Introduction
+# API Documentation
 
 This API has been documented with Postman and has been published [here](https://documenter.getpostman.com/view/26698816/2s946fdsnQ).
