@@ -1,6 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.db.models import Q
 
 from rest_framework.generics import (
     ListCreateAPIView,
@@ -156,7 +157,10 @@ class AdminListView(UserListViewMixin):
         serializer.save()
 
     def get_queryset(self):
-        return self.queryset.filter(is_staff=True)
+        return self.queryset.filter(
+            is_staff=True,
+            is_superuser=False,
+        )
 
 
 class AdminDetailView(UserDetailViewMixin):
