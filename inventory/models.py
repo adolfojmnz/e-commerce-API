@@ -7,14 +7,10 @@ class InventoryItem(models.Model):
                                 related_name='inventory')
     quantity = models.IntegerField(default=0)
     added_on = models.DateTimeField(auto_now=True)
-    updated_on = models.DateField(auto_now=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"""
-            vendor: {self.product.vendor.username.capitalize()}
-            | product: {self.product.name}
-            | quantity: {self.quantity}
-        """
+        return f"product: {self.product.name} | quantity: {self.quantity}"
 
     class Meta:
         verbose_name = 'Inventory Item'
