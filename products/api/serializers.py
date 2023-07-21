@@ -1,11 +1,8 @@
 from django.db.models import Avg
-from django.urls import reverse
 
 from rest_framework import serializers
 
 from products.models import Product
-
-from categories.models import Category
 
 
 class ProductSerializer(serializers.ModelSerializer):
