@@ -65,6 +65,7 @@ class TestCustomerPermissionsOnAdminListEndpoint(SetUpTestCase):
         return super().setUp()
 
     def test_customer_can_not_get_admin(self):
+        AccountsTestHelpers().create_user_list(is_admin=True)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -80,9 +81,13 @@ class TestSuperuserPermissionOnAdminListEndpoint(SetUpTestCase):
         self.url = reverse('admins')
         return super().setUp()
 
-    def test_superuser_can_get_admin(self):
+    def test_superuser_can_get_admin_list(self):
+        AccountsTestHelpers().create_user_list(is_admin=True)
         response = self.client.get(self.url)
-        serializer = UserSerializer(User.objects.all(), many=True)
+        serializer = UserSerializer(
+            User.objects.filter(is_staff=True, is_superuser=False),
+            many=True,
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
         self.assertTrue(response.data != [])

@@ -27,6 +27,9 @@ class SetUpTestCase(TestCase):
         self.product = ProductsTestHelpers().create_product(
             vendor=self.vendor, category=category
         )
+        self.inevntory_item = InventoryTestHelpers().create_inventory_item(
+            product=self.product, quantity=10,
+        )
 
     def setUp(self):
         self.create_related_objects()
@@ -35,22 +38,7 @@ class SetUpTestCase(TestCase):
 
 class InventoryItemListEndpointTestCase(SetUpTestCase):
 
-    def test_post(self):
-        response = self.client.post(reverse('inventory-items'),
-            data={'product': self.product.pk, 'quantity': 10},
-        )
-        serializer = InventoryItemSerializer(InventoryItem.objects.get(
-            pk=response.data['id']),
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, serializer.data)
-        self.assertEqual(InventoryItem.objects.count(), 1)
-        self.assertEqual(InventoryItem.objects.get().quantity, 10)
-        self.assertEqual(InventoryItem.objects.get().product, self.product)
-
     def test_get(self):
-        InventoryTestHelpers().create_inventory_item(product=self.product,
-                                                     quantity=10)
         response = self.client.get(reverse('inventory-items'))
         serializer = InventoryItemSerializer(InventoryItem.objects.all(),
                                              many=True)

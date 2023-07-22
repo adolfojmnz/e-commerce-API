@@ -62,9 +62,3 @@ class InventoryItemDetailEndpointTestCase(SetUpTestCase):
             InventoryItem.objects.get(pk=self.inventory_item.pk).quantity,
             5
         )
-
-    def test_delete(self):
-        response = self.client.delete(self.url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(response.data, None)
-        self.assertEqual(InventoryItem.objects.count(), 0)

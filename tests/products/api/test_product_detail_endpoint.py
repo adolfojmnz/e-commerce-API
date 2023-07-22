@@ -36,6 +36,11 @@ class SetUpTestCase(TestCase):
             self.product, quantity=10
         )
 
+    def get_serialized_product(self):
+        return ProductSerializer(
+            Product.objects.get(pk=self.product.pk)
+        )
+
     def setUp(self):
         self.create_related_objects()
         self.authenticate()
@@ -49,8 +54,8 @@ class ProductDetailEndpointTestCase(SetUpTestCase):
 
     def test_get(self):
         response = self.client.get(self.url)
+        serializer = self.get_serialized_product()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        serializer = ProductSerializer(Product.objects.get(pk=self.product.pk))
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(Product.objects.count(), 1)
 
@@ -60,8 +65,8 @@ class ProductDetailEndpointTestCase(SetUpTestCase):
             data=dumps(product_list[0]),
             content_type='application/json',
         )
+        serializer = self.get_serialized_product()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        serializer = ProductSerializer(Product.objects.get(pk=self.product.pk))
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(Product.objects.count(), 1)
 
@@ -71,7 +76,14 @@ class ProductDetailEndpointTestCase(SetUpTestCase):
             data=dumps({'name': 'New Name'}),
             content_type='application/json',
         )
+        serializer = self.get_serialized_product()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        serializer = ProductSerializer(Product.objects.get(pk=self.product.pk))
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(Product.objects.count(), 1)
+
+    def test_delete(self):
+        response = self.client.delete(self.url)
+        serializer = self.get_serialized_product()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Product inventory set to 0')
+        self.assertEqual(serializer.instance.inventory.quantity, 0)
