@@ -24,7 +24,9 @@ class CartSerializer(serializers.ModelSerializer):
         """
         return [
             self.context['request'].build_absolute_uri(
-                reverse('cart-item-detail', kwargs={'pk': cart_item.pk})
+                reverse(
+                    'customer-cart-item-detail', kwargs={'pk': cart_item.pk}
+                )
             ) for cart_item in cart.cart_items.all()
         ]
 
