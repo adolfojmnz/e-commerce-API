@@ -1,5 +1,3 @@
-from django.utils import timezone
-
 from rest_framework.generics import (
     ListAPIView, RetrieveAPIView,
     ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -80,10 +78,8 @@ class CustomerCartItemListView(ListCreateAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             cart = Cart.objects.get(user=request.user)
-            serializer.validated_data['quantity']
             serializer.validated_data['cart'] = cart
             serializer.save()
-            cart.updated_on = timezone.now()
             cart.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
