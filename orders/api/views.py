@@ -65,7 +65,11 @@ class OrderListView(OrderListMixin, ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(user=self.request.user)
+        queryset = super().get_queryset()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(
+                user=self.request.user
+            )
         return queryset
 
     def post(self, request, *args, **kwargs):
@@ -84,7 +88,6 @@ class OrderListView(OrderListMixin, ListAPIView):
             self.create_order_items(serializer.instance, cart_items)
             self.update_product_inventory(cart_items)
             self.delete_cart_items(cart, cart_items)
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -96,7 +99,11 @@ class OrderSingleView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(user=self.request.user)
+        queryset = super().get_queryset()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(
+                user=self.request.user
+            )
         return queryset
 
 
@@ -107,9 +114,11 @@ class OrderItemListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(
-            order__user=self.request.user
-        )
+        queryset = super().get_queryset()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(
+                order__user=self.request.user
+            )
         if self.request.query_params.get('order'):
             queryset = queryset.filter(
                 order__pk=self.request.query_params.get('order')
@@ -124,7 +133,9 @@ class OrderItemSingleView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(
-            order__user=self.request.user
-        )
+        queryset = super().get_queryset()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(
+                order__user=self.request.user
+            )
         return queryset
