@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory, APIClient
 
-from products.models import Product
+from products.models import Product, DeletedProduct
 from products.api.serializers import ProductSerializer
 
 from tests.data import product_list
@@ -83,7 +83,7 @@ class ProductDetailEndpointTestCase(SetUpTestCase):
 
     def test_delete(self):
         response = self.client.delete(self.url)
-        serializer = self.get_serialized_product()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], 'Product inventory set to 0')
-        self.assertEqual(serializer.instance.inventory.quantity, 0)
+        self.assertTrue(
+            DeletedProduct.objects.filter(product=self.product).exists()
+        )
