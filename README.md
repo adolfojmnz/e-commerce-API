@@ -31,6 +31,13 @@ The presentation tier (front-end) can be found in the
 [E-Commerce-Next.js](https://github.com/Eadwulf/e-commerce-nextjs) repo.
 <br><br>
 
+# API Documentation
+
+This API has been documented using Postman. The documentation provides extensive information
+on how to work with each of the endpoints that the API offers.
+Find the documentation in this [link](https://documenter.getpostman.com/view/26698816/2s946fdsnQ).
+<br>
+
 
 # Installation
 
@@ -245,8 +252,3 @@ Destroying test database for alias 'default'...
 # Entity Relationship Diagram
 
 ![Database ERD](./ERD.png)
-
-
-# API Documentation
-
-This API has been documented with Postman and has been published [here](https://documenter.getpostman.com/view/26698816/2s946fdsnQ).
