@@ -3,29 +3,30 @@
 ### A RESTFull API for an e-commerce app.
 
 This project has been developed with Python using Django and Django Rest Framework.
-It is powered by a PosgreSQL database.
+It is powered by a PostgreSQL database.
 
-So far, it has a CI workflow defined with GitHub Actions which sets up and tests the
+It has a CI workflow defined with GitHub Actions which sets up and tests the
 code committed to this GitHub repo, subsequently, it builds and pushes
 a Docker Image to Docker Hub.
 
 This RESTFull API features Jason Web Token authentication and several endpoints with
 defined levels of authorization based on the requesting user's role.
 
-The project's endpoints allow to perform CRUD operations on multiple database models,
-such as:
+The project's endpoints allow performing CRUD operations on the project's database models which are:
+ - Accounts
  - Products
  - Inventory
  - Categories
- - Shopping Cart and Shopping Cart Items
- - Orders and Order Items
+ - Shopping Cart
+ - Shopping Cart Items
+ - Orders
+ - Order Items
  - Reviews
 
-The project is being structured as a three tiers architecture with:
+The project is being structured as a three-tiers architecture which consists of:
  - Data Tier: PostgreSQL database
  - Presentation Tier: Netx.JS Application
  - Backend Tier: Django Application (This RESTFull API)
-
 
 The presentation tier (front-end) can be found in the
 [E-Commerce-Next.js](https://github.com/Eadwulf/e-commerce-nextjs) repo.
