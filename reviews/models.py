@@ -5,7 +5,7 @@ class Review(models.Model):
     """
     Reviews require the order that the product was ordered in
     Args:
-        - order (Order): The order that the product to review was was ordered in
+        - order (Order): The order that the product to review was ordered in
         - product (Product): The product to review
         - user (User): The user that made the review
     """

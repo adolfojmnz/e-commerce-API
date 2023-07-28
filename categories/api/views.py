@@ -26,14 +26,12 @@ class CategoryListView(PermissionMixin, ListCreateAPIView):
     model = Category
     queryset = model.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = []
 
 
 class CategorySingleView(PermissionMixin, RetrieveUpdateDestroyAPIView):
     model = Category
     queryset = model.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = []
 
 
 class CategoryProductsView(ListAPIView):
