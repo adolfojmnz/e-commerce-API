@@ -1,6 +1,7 @@
 from rest_framework.generics import (
-    ListAPIView, RetrieveAPIView,
-    ListCreateAPIView, RetrieveUpdateDestroyAPIView
+    ListAPIView, ListCreateAPIView,
+    RetrieveAPIView, RetrieveDestroyAPIView,
+    RetrieveUpdateDestroyAPIView
 )
 from rest_framework import status
 from rest_framework.response import Response
@@ -85,7 +86,7 @@ class CustomerCartItemListView(ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomerCartItemSingleView(RetrieveUpdateDestroyAPIView):
+class CustomerCartItemSingleView(RetrieveDestroyAPIView):
     model = CartItem
     queryset = model.objects.all()
     serializer_class = CartItemSerializer
@@ -94,3 +95,26 @@ class CustomerCartItemSingleView(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         cart = Cart.objects.get(user=self.request.user)
         return CartItem.objects.get(cart=cart, pk=self.kwargs['pk'])
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(instance=instance,
+                                           data=request.data,
+                                           partial=True,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        new_quantity = serializer.validated_data.get('quantity')
+        if new_quantity:
+            quantity_in_stock = instance.product.inventory.quantity
+            if not new_quantity <= quantity_in_stock:
+                return Response(
+                    {'message': 'Requested update quantity not available'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        if serializer.validated_data.get('product'):
+            return Response(
+                {'message': 'Cart Item product cannot be updated'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)

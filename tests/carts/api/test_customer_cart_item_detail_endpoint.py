@@ -81,3 +81,20 @@ class TestCartItemDetailEndpoint(SetUpTestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(response.data, None)
         self.assertEqual(CartItem.objects.count(), 0)
+
+    def test_prohibited_update_cart_item_product(self):
+        """ Test that the product of a cart item cannot be updated. """
+        data = {'product_id': 5}
+        response = self.client.patch(self.url,
+                                     data=dumps(data),
+                                     content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_updatable_quntity_is_not_greater_than_stock_quantity(self):
+        """ Test that the cart item quantity to be update cannot be
+            greater than the quantity of the product in stock. """
+        data = {'quantity': 1000}
+        response = self.client.patch(self.url,
+                                   data=dumps(data),
+                                   content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
