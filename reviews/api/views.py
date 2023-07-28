@@ -44,7 +44,12 @@ class ReviewListView(ReviewListMixin, ListAPIView):
     model = Review
     queryset = model.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        self.permission_classes = []
+        if not self.request.method in SAFE_METHODS:
+            self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
 
     def post(self, request, *args, **kwargs):
         if not self.user_can_review(request.user,
@@ -77,7 +82,6 @@ class ReviewSingleView(RetrieveUpdateDestroyAPIView):
     model = Review
     queryset = model.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
 
     def requesting_user_owns_review(self):
         """ Returns True if the requesting user owns the
@@ -91,9 +95,8 @@ class ReviewSingleView(RetrieveUpdateDestroyAPIView):
             return False
 
     def get_permissions(self):
-        if not self.requesting_user_owns_review():
-            self.permission_classes = [IsAdminUser]
         if self.request.method in SAFE_METHODS:
-            self.permission_classes = [IsAuthenticated]
+            self.permission_classes = []
+        elif not self.requesting_user_owns_review():
+            self.permission_classes = [IsAdminUser]
         return super().get_permissions()
-
