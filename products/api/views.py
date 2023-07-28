@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView
 )
@@ -22,7 +24,34 @@ class PermissionMixin:
         return super().get_permissions()
 
 
-class ProductListView(PermissionMixin, ListCreateAPIView):
+class ProductQueryset:
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_staff:
+            return self.get_available_products(queryset)
+        if self.request.query_params.get('available') == 'false':
+            return self.get_unavailable_products(queryset)
+        if self.request.query_params.get('available') == 'true':
+            return self.get_available_products(queryset)
+        return queryset
+
+    def get_available_products(self, queryset):
+        queryset = queryset.filter(
+            Q(available=True) &
+            Q(inventory__quantity__gt=0)
+        )
+        return queryset
+
+    def get_unavailable_products(self, queryset):
+        queryset = queryset.filter(
+            Q(available=False) |
+            Q(inventory__quantity__lte=0)
+        )
+        return queryset
+
+
+class ProductListView(PermissionMixin, ProductQueryset, ListCreateAPIView):
     model = Product
     queryset = model.objects.all()
     serializer_class = ProductSerializer
@@ -40,12 +69,6 @@ class ProductListView(PermissionMixin, ListCreateAPIView):
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        if self.request.query_params.get('all', False) is False:
-            queryset = queryset.filter(available=True, inventory__quantity__gt=0)
-        return super().get_queryset()
 
 
 class ProductSingleView(PermissionMixin, RetrieveUpdateDestroyAPIView):
