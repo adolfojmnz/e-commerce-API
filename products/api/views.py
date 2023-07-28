@@ -8,7 +8,7 @@ from rest_framework.permissions import (
     IsAdminUser,
 )
 
-from products.models import Product
+from products.models import Product, DeletedProduct
 from products.api.serializers import ProductSerializer
 
 from inventory.models import InventoryItem
@@ -53,18 +53,22 @@ class ProductSingleView(PermissionMixin, RetrieveUpdateDestroyAPIView):
     queryset = model.objects.all()
     serializer_class = ProductSerializer
 
-    def perform_destroy(self, instance):
-        inventory_item = instance.inventory
-        inventory_item.quantity = 0
-        inventory_item.save()
-
     def get_queryset(self):
         queryset = super().get_queryset()
         if not self.request.user.is_staff:
             queryset = queryset.filter(available=True, inventory__quantity__gt=0)
         return queryset
 
+    def perform_destroy(self, instance):
+        DeletedProduct.objects.create(
+            product = instance,
+            deleted_by=self.request.user,
+        )
+
     def delete(self, request, *args, **kwargs):
-        super().delete(request, *args, **kwargs)
-        return Response({'message': 'Product inventory set to 0'},
-                        status=status.HTTP_200_OK)
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {'message': 'The product has been soft deleted'},
+            status=status.HTTP_200_OK,
+        )

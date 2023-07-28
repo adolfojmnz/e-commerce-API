@@ -27,3 +27,12 @@ class Product(models.Model):
     def __str__(self) -> str:
         return self.name
 
+
+class DeletedProduct(models.Model):
+    product = models.ForeignKey('products.product',
+                                on_delete=models.PROTECT,
+                                related_name='deleted_products')
+    deleted_by = models.ForeignKey('accounts.user',
+                                    on_delete=models.PROTECT,
+                                    related_name='deleted_products')
+    deleted_on = models.DateTimeField(auto_now_add=True)
